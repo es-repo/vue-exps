@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>2048 Game</title>
+    <script src="../scripts/vue.min.js"></script>
+    <script src="game2048.js"></script>
+    <style>
+        body, html {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #35495e;
+            border-radius: 3%;
+            outline: none;
+        }
+
+            .board .cell {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                background-color: #41b883;
+                border-radius: 5.2%;
+            }
+
+                .board .cell .chip {
+                    display: flex;
+                    height: 100%;
+                    width:100%;
+                    justify-content: center;
+                    align-items: center;
+                    overflow: hidden;
+                    text-align: justify;
+                    font-weight: bold
+                }
+    </style>
+</head>
+<body>
+    <div id="app" style="text-align:center;width:100%">
+        <input v-model.number="borderSizePx" type="range" min="50" max="1000" step="10" />
+        <div style="display:flex;flex-wrap:wrap">
+            <div v-for="i in gamesCount" style="margin:20px">
+                <div v-if="!gameStarted[i-1]">
+                    <input v-model.number="size[i-1]" type="range" min="3" max="10" style="width:100%" />
+                    <button @click="startGame(i)">New Game</button>
+                </div>
+                <game-2048 :ref="'game' + i" :size="size[i-1]"
+                           :listen-own-events-only="false"
+                           :tab-index="i"
+                           :border-size-px="borderSizePx"
+                           @game-started="onGameStarted(i)"
+                           @game-ended="onGameEnded(i)"></game-2048>
+            </div>
+        </div>
+    </div>
+
+    <template id="game2048-chip" hidden>
+        <div class="chip" v-show="value>0" :style="style">{{value}}</div>
+    </template>
+
+    <template id="game2048" hidden>
+        <div>
+            <h1 v-if="isGameEnded">GAME OVER!</h1>
+            <div class="board" :tabindex="tabIndex" :style="boardStyle">
+                <div v-for="(c, index) in chips" class="cell"
+                     key="index" :style="cellStyle"><game2048-chip :value="c" :size-px="cellSizePx"></game2048-chip></div>
+            </div>
+        </div>
+    </template>
+    <script>
+
+        (function () {
+            var fontSizeCoefs = [1, 1, 0.8, 0.65, 0.5, 0.4, 0.35, 0.32]
+
+            Vue.component('game2048-chip', {
+                template: '#game2048-chip',
+                props: {
+                    value: { type: Number },
+                    sizePx: { type: Number }
+                },
+                computed: {
+                    style: function () {
+                        return {
+                            fontSize: this.fontSizePx + 'px'
+                        }
+                    },
+                    fontSizePx: function () {
+                        var n = Math.floor(Math.log(this.value) / Math.log(10))
+                        var b = Math.floor(this.sizePx / 1.5)
+                        return b * (n < 8 ? fontSizeCoefs[n] : fontSizeCoefs[7])
+                    }
+                }
+            })
+        })();
+
+        (function () {
+
+            var keyMap = {}
+            keyMap[37] = 'left'
+            keyMap[38] = 'up'
+            keyMap[39] = 'right'
+            keyMap[40] = 'down'
+
+            function createKeyboardHandler(game, onMove) {
+                return function (e) {
+                    var m = keyMap[e.keyCode]
+                    if (m == null)
+                        return
+                    var shifts = game[m]()
+                    onMove(shifts)
+                    e.preventDefault()
+                }
+            }
+
+            Vue.component('game2048', {
+                template: '#game2048',
+                props: {
+                    size: { type: Number },
+                    listenOwnEventsOnly: { type: Boolean, default: false },
+                    tabIndex: { type: Number, default: 1 },
+                    borderSizePx: { type: Number, default: 444 }
+                },
+                data: function () {
+                    return {
+                        chips: this.createChips(this.size),
+                        isGameStarted: false,
+                        isGameEnded: false
+                    }
+                },
+                computed: {
+                    boardStyle: function () {
+                        return {
+                            width: this.boardWidthPx + 'px',
+                            height: this.boardHeightPx + 'px',
+                            paddingBottom: this.boardPaddingBottomPx + 'px'
+                        }
+                    },
+                    boardWidthPx: function () {
+                        return this.borderSizePx
+                    },
+                    boardHeightPx: function () {
+                        return this.boardWidthPx - this.boardPaddingBottomPx
+                    },
+                    boardPaddingBottomPx: function () {
+                        return this.cellMarginPct / 100 * this.boardWidthPx
+                    },
+                    cellStyle: function () {
+                        return {
+                            width: this.cellSizePct + '%',
+                            height: this.cellSizePct + '%',
+                            marginTop: this.cellMarginPct + '%',
+                            marginLeft: this.cellMarginPct + '%'
+                        }
+                    },
+                    cellSizePct: function () {
+                        return this.cellMarginPct * 9
+                    },
+                    cellSizePx: function () {
+                        return this.cellSizePct / 100 * this.boardWidthPx
+                    },
+                    cellMarginPct: function () {
+                        return 1 / (10 * this.size + 1) * 100
+                    }
+                },
+                watch: {
+                    size: function () {
+                        this.chips = this.createChips(this.size)
+                    }
+                },
+                methods: {
+                    startGame: function () {
+                        var game = createGame2048(this.size)
+                        for (var i = Math.max(2, this.size - 2); i > 0; i--)
+                            game.turn()
+
+                        this.updateChips(game)
+                        this.isGameStarted = true
+
+                        var self = this
+                        var kh = createKeyboardHandler(game, function (shifts) {
+                            if (shifts.length > 0) {
+                                self.updateChips(game)
+                                for (var i = Math.max(1, self.size - 3); i > 0; i--)
+                                    game.turn()
+
+                                self.updateChips(game)
+                            }
+                            if (game.isFull()) {
+                                listenKeysOn.removeEventListener('keydown', kh)
+                                self.endGame()
+                            }
+                        })
+
+                        var listenKeysOn = this.listenOwnEventsOnly ? this.$el : document
+                        listenKeysOn.addEventListener('keydown', kh)
+                        this.$emit('game-started', this)
+                    },
+                    endGame: function () {
+                        this.isGameStarted = false
+                        this.isGameEnded = true
+                        this.$emit('game-ended', this)
+                    },
+                    createChips: function (s) {
+                        return Array.apply(null, { length: s * s }).map(function () { return 0 })
+                    },
+                    updateChips: function (game) {
+                        for (var y = 0; y < this.size; y++) {
+                            for (var x = 0; x < this.size; x++) {
+                                Vue.set(this.chips, y * this.size + x, game.board[y][x])
+                            }
+                        }
+                    }
+                }
+            })
+        })()
+
+        new Vue({
+            el: '#app',
+            data: function () {
+                var gamesCount = 4
+                return {
+                    borderSizePx: 250,
+                    gamesCount: gamesCount,
+                    size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
+                    gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false })
+                }
+            }
+            ,
+            methods: {
+                startGame: function (n) {
+                    this.$refs['game' + n][0].startGame()
+                },
+                onGameStarted: function (n) {
+                    Vue.set(this.gameStarted, n - 1, true)
+                },
+                onGameEnded: function (n) {
+                    Vue.set(this.gameStarted, n - 1, false)
+                }
+            }
+        })
+    </script>
+</body>
+</html>
