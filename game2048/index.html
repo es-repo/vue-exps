@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>2048 Game</title>
-    <script src="../scripts/vue.min.js"></script>
+    <script src="../scripts/vue.js"></script>
     <script src="game2048.js"></script>
     <style>
         body, html {
@@ -15,8 +15,9 @@
         .board {
             display: flex;
             flex-wrap: wrap;
+            align-content: flex-start;
+            align-items: space-around;
             background-color: #35495e;
-            border-radius: 3%;
             outline: none;
         }
 
@@ -25,13 +26,12 @@
                 justify-content: space-around;
                 align-items: center;
                 background-color: #41b883;
-                border-radius: 5.2%;
             }
 
                 .board .cell .chip {
                     display: flex;
                     height: 100%;
-                    width:100%;
+                    width: 100%;
                     justify-content: center;
                     align-items: center;
                     overflow: hidden;
@@ -42,17 +42,17 @@
 </head>
 <body>
     <div id="app" style="text-align:center;width:100%">
-        <input v-model.number="borderSizePx" type="range" min="50" max="1000" step="10" />
+        <input v-model.number="boardSizePx" type="range" min="50" max="1000" step="10" />
         <div style="display:flex;flex-wrap:wrap">
-            <div v-for="i in gamesCount" style="margin:20px">
+            <div v-for="i in gamesCount" style="margin:20px 20px;">
                 <div v-if="!gameStarted[i-1]">
-                    <input v-model.number="size[i-1]" type="range" min="3" max="10" style="width:100%" />
+                    <input v-model.number="size[i-1]" type="range" min="3" max="80" style="width:100%" />
                     <button @click="startGame(i)">New Game</button>
                 </div>
                 <game-2048 :ref="'game' + i" :size="size[i-1]"
                            :listen-own-events-only="false"
                            :tab-index="i"
-                           :border-size-px="borderSizePx"
+                           :board-size-px="boardSizePx"
                            @game-started="onGameStarted(i)"
                            @game-ended="onGameEnded(i)"></game-2048>
             </div>
@@ -64,11 +64,10 @@
     </template>
 
     <template id="game2048" hidden>
-        <div>
+        <div class="board" :tabindex="tabIndex" :style="boardStyle">
             <h1 v-if="isGameEnded">GAME OVER!</h1>
-            <div class="board" :tabindex="tabIndex" :style="boardStyle">
-                <div v-for="(c, index) in chips" class="cell"
-                     key="index" :style="cellStyle"><game2048-chip :value="c" :size-px="cellSizePx"></game2048-chip></div>
+            <div v-for="(c, index) in chips" key="index" class="cell" :style="cellStyle">
+                <game2048-chip :value="c" :size-px="cellSizePx"></game2048-chip>
             </div>
         </div>
     </template>
@@ -123,48 +122,47 @@
                     size: { type: Number },
                     listenOwnEventsOnly: { type: Boolean, default: false },
                     tabIndex: { type: Number, default: 1 },
-                    borderSizePx: { type: Number, default: 444 }
+                    boardSizePx: { type: Number, default: 0 }
                 },
                 data: function () {
                     return {
                         chips: this.createChips(this.size),
                         isGameStarted: false,
-                        isGameEnded: false
+                        isGameEnded: false,
+                        boardSizeAutoPx: 0,
                     }
+                },
+                mounted: function () {
+                    this.boardSizeAutoPx = this.boardSizePx > 0
+                        ? this.boardSizePx
+                        : this.$el.getBoundingClientRect().width
                 },
                 computed: {
                     boardStyle: function () {
                         return {
-                            width: this.boardWidthPx + 'px',
-                            height: this.boardHeightPx + 'px',
-                            paddingBottom: this.boardPaddingBottomPx + 'px'
+                            width: this.boardSizePx > 0 ? this.boardSizePx + 'px' : '100%',
+                            height: this.boardSizePx > 0 ? this.boardSizePx + 'px' : '100%',
+                            borderRadius: 7 / this.size + '%'
                         }
-                    },
-                    boardWidthPx: function () {
-                        return this.borderSizePx
-                    },
-                    boardHeightPx: function () {
-                        return this.boardWidthPx - this.boardPaddingBottomPx
-                    },
-                    boardPaddingBottomPx: function () {
-                        return this.cellMarginPct / 100 * this.boardWidthPx
                     },
                     cellStyle: function () {
                         return {
                             width: this.cellSizePct + '%',
                             height: this.cellSizePct + '%',
+                            marginLeft: this.cellMarginPct + '%',
                             marginTop: this.cellMarginPct + '%',
-                            marginLeft: this.cellMarginPct + '%'
+                            borderRadius: '7%'
                         }
                     },
                     cellSizePct: function () {
-                        return this.cellMarginPct * 9
-                    },
-                    cellSizePx: function () {
-                        return this.cellSizePct / 100 * this.boardWidthPx
+                        return 8 * this.cellMarginPct
                     },
                     cellMarginPct: function () {
-                        return 1 / (10 * this.size + 1) * 100
+                        return 100 / (9 * this.size + 1)
+                    },
+                    cellSizePx: function () {
+                        return this.cellSizePct / 100 *
+                            (this.boardSizePx > 0 ? this.boardSizePx : this.boardSizeAutoPx)
                     }
                 },
                 watch: {
@@ -180,6 +178,7 @@
 
                         this.updateChips(game)
                         this.isGameStarted = true
+                        this.isGameEnded = false
 
                         var self = this
                         var kh = createKeyboardHandler(game, function (shifts) {
@@ -224,9 +223,9 @@
             data: function () {
                 var gamesCount = 4
                 return {
-                    borderSizePx: 250,
+                    boardSizePx: 250,
                     gamesCount: gamesCount,
-                    size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
+                    size: Array.apply(null, { length: gamesCount }).map(function () { return 8 }),
                     gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false })
                 }
             }
