@@ -120,12 +120,14 @@
 		up: function () {
 			return move(rot270)
 		},
-		isFull: function () {
-			for (var c = { x: 0 }; c.x < size; c.x++)
-				for (c.y = 0; c.y < size; c.y++)
-					if (cellIsEmpty(c))
-						return false
-			return true
+		canMove: function () {
+			for (var c = { y: 0 }, cr = { y: 0 }, cb = {y:1}; c.y < size; c.y++, cr.y++, cb.y++)
+				for (c.x = 0, cr.x=1, cb.x=0; c.x < size; c.x++, cr.x++, cb.x++) {
+					if (cellIsEmpty(c) ||
+						(cr.x < size && cellsEqual(c, cr)) ||
+						(cb.y < size && cellsEqual(c, cb)))
+						return true
+				}
 		}
 	}
 }

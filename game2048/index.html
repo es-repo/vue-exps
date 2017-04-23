@@ -195,7 +195,7 @@
                                     self.addChips(chips)
                                 }
                             }
-                            if (game.isFull()) {
+                            if (!game.canMove()) {
                                 listenKeysOn.removeEventListener('keydown', kh)
                                 self.endGame()
                             }
