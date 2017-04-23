@@ -14,8 +14,10 @@
 	function canMoveChip(cf, ct) { return cellIsEmpty(ct) || cellsEqual(cf, ct) }
 
 	function moveChip(cf, ct) {
-		board[ct.y][ct.x] += board[cf.y][cf.x]
+		var tWasEmpty = cellIsEmpty(ct)
+		var v = board[ct.y][ct.x] += board[cf.y][cf.x]
 		board[cf.y][cf.x] = 0
+		return tWasEmpty ? 0 : v
 	}
 
 	function findRandomEmptyPos() {
@@ -51,7 +53,8 @@
 	}
 
 	function move(rot) {
-		var shifts = []
+		var moves = []
+		var consolidations = []
 		var c = {}
 		var tc = {}
 		for (var y = 0; y < size; y++) {
@@ -74,28 +77,36 @@
 
 					if (x != tx) {
 						rot(tc, tx, y)
-						moveChip(c, tc)
-						shifts.push({ from: c, to: tc })
+						var v = moveChip(c, tc)
+						moves.push({
+							from: { x: c.x, y: c.y },
+							to: { x: tc.x, y: tc.y }
+						})
+						if (v > 0)
+							consolidations.push({ x: tc.x, y: tc.y, value: v })
 					}
 				}
 			}
 		}
-		return shifts
+		return {
+			moves: moves, consolidations: consolidations
+		}
 	}
 
 	return {
 		size: size,
 		board: board,
 		turn: function () {
-			var r = []
+			var chips = []
 			var p = findRandomEmptyPos()
 			if (p != null) {
-				var v = 2 * (1 + Math.round(Math.random()))
-				p.v = v
+				var rnd = Math.random()
+				var v = rnd > 0.8 ? 4 : 2
+				p.value = v
 				board[p.y][p.x] = v
-				r.push(p)
+				chips.push(p)
 			}
-			return r
+			return chips
 		},
 		right: function () {
 			return move(rot0)

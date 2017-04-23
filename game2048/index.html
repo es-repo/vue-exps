@@ -36,7 +36,9 @@
                     align-items: center;
                     overflow: hidden;
                     text-align: justify;
-                    font-weight: bold
+                    font-weight: bold;
+                    background-color: honeydew;
+                    //border-radius:5%;
                 }
     </style>
 </head>
@@ -46,7 +48,7 @@
         <div style="display:flex;flex-wrap:wrap">
             <div v-for="i in gamesCount" style="margin:20px 20px;">
                 <div v-if="!gameStarted[i-1]">
-                    <input v-model.number="size[i-1]" type="range" min="3" max="80" style="width:100%" />
+                    <input v-model.number="size[i-1]" type="range" min="3" max="20" style="width:100%" />
                     <button @click="startGame(i)">New Game</button>
                 </div>
                 <game-2048 :ref="'game' + i" :size="size[i-1]"
@@ -60,14 +62,14 @@
     </div>
 
     <template id="game2048-chip" hidden>
-        <div class="chip" v-show="value>0" :style="style">{{value}}</div>
+        <div class="chip" :style="style">{{value}}</div>
     </template>
 
     <template id="game2048" hidden>
         <div class="board" :tabindex="tabIndex" :style="boardStyle">
             <h1 v-if="isGameEnded">GAME OVER!</h1>
-            <div v-for="(c, index) in chips" key="index" class="cell" :style="cellStyle">
-                <game2048-chip :value="c" :size-px="cellSizePx"></game2048-chip>
+            <div v-for="(cl, index) in cells" class="cell" :style="cellStyle">
+                <game2048-chip v-for="ch in cl.chips" :key="ch" :value="ch.value" :size-px="cellSizePx"></game2048-chip>
             </div>
         </div>
     </template>
@@ -110,8 +112,8 @@
                     var m = keyMap[e.keyCode]
                     if (m == null)
                         return
-                    var shifts = game[m]()
-                    onMove(shifts)
+                    var boardChanges = game[m]()
+                    onMove(boardChanges)
                     e.preventDefault()
                 }
             }
@@ -126,7 +128,7 @@
                 },
                 data: function () {
                     return {
-                        chips: this.createChips(this.size),
+                        cells: this.createCells(),
                         isGameStarted: false,
                         isGameEnded: false,
                         boardSizeAutoPx: 0,
@@ -136,6 +138,11 @@
                     this.boardSizeAutoPx = this.boardSizePx > 0
                         ? this.boardSizePx
                         : this.$el.getBoundingClientRect().width
+                },
+                watch: {
+                    size: function () {
+                        this.cells = this.createCells()
+                    }
                 },
                 computed: {
                     boardStyle: function () {
@@ -165,29 +172,28 @@
                             (this.boardSizePx > 0 ? this.boardSizePx : this.boardSizeAutoPx)
                     }
                 },
-                watch: {
-                    size: function () {
-                        this.chips = this.createChips(this.size)
-                    }
-                },
                 methods: {
                     startGame: function () {
-                        var game = createGame2048(this.size)
-                        for (var i = Math.max(2, this.size - 2); i > 0; i--)
-                            game.turn()
+                        var self = this
+                        this.emptyCells()
 
-                        this.updateChips(game)
+                        var game = createGame2048(this.size)
+                        for (var i = Math.max(2, this.size - 2); i > 0; i--) {
+                            var chips = game.turn()
+                            this.addChips(chips)
+                        }
+
                         this.isGameStarted = true
                         this.isGameEnded = false
 
-                        var self = this
-                        var kh = createKeyboardHandler(game, function (shifts) {
-                            if (shifts.length > 0) {
-                                self.updateChips(game)
-                                for (var i = Math.max(1, self.size - 3); i > 0; i--)
-                                    game.turn()
-
-                                self.updateChips(game)
+                        var kh = createKeyboardHandler(game, function (boardChanges) {
+                            if (boardChanges.moves.length > 0) {
+                                self.moveChips(boardChanges.moves)
+                                self.consolidateChips(boardChanges.consolidations)
+                                for (var i = Math.max(1, self.size - 3); i > 0; i--) {
+                                    var chips = game.turn()
+                                    self.addChips(chips)
+                                }
                             }
                             if (game.isFull()) {
                                 listenKeysOn.removeEventListener('keydown', kh)
@@ -204,28 +210,56 @@
                         this.isGameEnded = true
                         this.$emit('game-ended', this)
                     },
-                    createChips: function (s) {
-                        return Array.apply(null, { length: s * s }).map(function () { return 0 })
+                    consolidateChips: function (consolidations) {
+                        var self = this
+                        consolidations.forEach(function (c) {
+                            var cell = self.getCell(c)
+                            var chips = cell.chips
+                            chips.splice(0, chips.length - 1)
+                            chips[0].value = c.value
+                        })
                     },
-                    updateChips: function (game) {
-                        for (var y = 0; y < this.size; y++) {
-                            for (var x = 0; x < this.size; x++) {
-                                Vue.set(this.chips, y * this.size + x, game.board[y][x])
-                            }
-                        }
+                    moveChips: function (moves) {
+                        for (var i = 0; i < moves.length; i++)
+                            this.moveChip(moves[i].from, moves[i].to)
+                    },
+                    moveChip: function (from, to, value) {
+                        var ti = this.getCellIndex(to)
+                        var fi = this.getCellIndex(from)
+                        this.cells[ti].chips.push(this.cells[fi].chips[0])
+                        this.cells[fi].chips.pop()
+                    },
+                    addChips: function (chips) {
+                        chips.forEach(this.addChip)
+                    },
+                    addChip: function (c) {
+                        this.cells[this.getCellIndex(c)].chips.push({ value: c.value })
+                    },
+                    getCellIndex: function (c) {
+                        return c.y * this.size + c.x
+                    },
+                    getCell: function(c) {
+                        return this.cells[this.getCellIndex(c)]
+                    },
+                    createCells: function () {
+                        return Array.apply(null, { length: this.size * this.size })
+                            .map(function () { return { chips: [] } })
+                    },
+                    emptyCells: function () {
+                        this.cells.forEach(function (c) { c.chips.splice(0) })
                     }
                 }
             })
         })()
 
-        new Vue({
+        var app = new Vue({
             el: '#app',
             data: function () {
                 var gamesCount = 4
                 return {
                     boardSizePx: 250,
                     gamesCount: gamesCount,
-                    size: Array.apply(null, { length: gamesCount }).map(function () { return 8 }),
+                    size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
                     gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false })
                 }
             }
