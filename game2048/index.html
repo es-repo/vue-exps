@@ -12,8 +12,27 @@
             font-size: 18px;
         }
 
-        .board-container {
-            display: flex;
+        .half-white {
+            background-color: white;
+            opacity: 0.7;
+        }
+
+        .game-container {
+            position: relative;
+        }
+
+            .game-container .overlay {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold
+            }
+
+        .game-over {
         }
 
         .board {
@@ -43,7 +62,7 @@
                     font-weight: bold;
                     background-color: honeydew;
                     z-index: 1;
-                    border-radius:7%;
+                    border-radius: 7%;
                 }
 
         @keyframes chip-value-changed {
@@ -80,12 +99,24 @@
                     <input v-model.number="size[i-1]" type="range" min="3" max="20" style="width:100%" />
                     <button @click="startGame(i)">New Game</button>
                 </div>
-                <game-2048 :ref="'game' + i" :size="size[i-1]"
-                           :listen-own-events-only="false"
-                           :tab-index="i"
-                           :board-size-px="boardSizePx"
-                           @game-started="onGameStarted(i)"
-                           @game-ended="onGameEnded(i)"></game-2048>
+                <div class="game-container">
+                    <div v-if="gameEnded[i-1]">
+                        <div class="overlay half-white"></div>
+                        <div class="overlay game-over">
+                            <h1>Game over!</h1>
+                        </div>
+                    </div>
+                    <div style="position:">
+
+                        <game-2048 :ref="'game' + i" :size="size[i-1]"
+                                   :listen-own-events-only="false"
+                                   :tab-index="i"
+                                   :board-size-px="boardSizePx"
+                                   @game-started="onGameStarted(i)"
+                                   @game-ended="onGameEnded(i)"></game-2048>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -97,14 +128,11 @@
     </template>
 
     <template id="game2048" hidden>
-        <div class="board-container">
-            <h1 v-if="isGameEnded">GAME OVER!</h1>
-            <div class="board" :tabindex="tabIndex" :style="boardStyle">
-                <div ref="cells" v-for="(cl, index) in cells" class="cell" :key="cl" :style="cellStyle">
-                    <game2048-chip ref="chips" v-for="(ch, i) in cl.chips" :key="ch" :animation-time-ms="animationTimeMs"
-                                   :chip="ch"
-                                   :size-px="cellSizePx"></game2048-chip>
-                </div>
+        <div class="board" :tabindex="tabIndex" :style="boardStyle">
+            <div ref="cells" v-for="(cl, index) in cells" class="cell" :key="cl" :style="cellStyle">
+                <game2048-chip ref="chips" v-for="(ch, i) in cl.chips" :key="ch" :animation-time-ms="animationTimeMs"
+                               :chip="ch"
+                               :size-px="cellSizePx"></game2048-chip>
             </div>
         </div>
     </template>
@@ -258,11 +286,8 @@
 
                     runKeyboardControl: function (game) {
                         var listenKeysOn = this.listenOwnEventsOnly ? this.$el : document
-                        var h
-                        var doGameMove = this.createGameMove(game, function () {
-                            listenKeysOn.removeEventListener('keydown', h)
-                        })
-                        h = function (e) {
+                        var doGameMove = this.createGameMove(game)
+                        var h = function (e) {
                             var m = keyMap[e.keyCode]
                             if (m == null)
                                 return
@@ -270,11 +295,13 @@
                             doGameMove(m)
                         }
                         listenKeysOn.addEventListener('keydown', h)
+                        this.$once('game-ended', function () { 
+                            listenKeysOn.removeEventListener('keydown', h) })
                     },
 
-                    createGameMove: function (game, onEnd) {
+                    createGameMove: function (game) {
                         var self = this
-                        var boardChanges = { consolidations:[]}
+                        var boardChanges = { consolidations: [] }
                         var newChips = []
                         var consolidateAndAddChipsDeffered = deffered(self.animationTimeMs,
                             function () {
@@ -296,9 +323,9 @@
                             self.moveChips(boardChanges.moves)
                             consolidateAndAddChipsDeffered.renew()
                             if (!game.canMove()) {
-                                self.endGame()
-                                if (onEnd)
-                                    onEnd()
+                                setTimeout(function () {
+                                    self.endGame()
+                                }, self.animationTimeMs)
                             }
                         }
                     },
@@ -367,7 +394,8 @@
                     boardSizePx: 250,
                     gamesCount: gamesCount,
                     size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
-                    gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false })
+                    gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false }),
+                    gameEnded: Array.apply(null, { length: gamesCount }).map(function () { return false })
                 }
             }
             ,
@@ -377,9 +405,11 @@
                 },
                 onGameStarted: function (n) {
                     Vue.set(this.gameStarted, n - 1, true)
+                    Vue.set(this.gameEnded, n - 1, false)
                 },
                 onGameEnded: function (n) {
                     Vue.set(this.gameStarted, n - 1, false)
+                    Vue.set(this.gameEnded, n - 1, true)
                 }
             }
         })
