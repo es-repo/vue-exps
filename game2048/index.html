@@ -12,6 +12,10 @@
             font-size: 18px;
         }
 
+        .board-container {
+            display: flex;
+        }
+
         .board {
             display: flex;
             flex-wrap: wrap;
@@ -22,24 +26,49 @@
         }
 
             .board .cell {
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
                 background-color: #41b883;
+                position: relative;
+                border-radius: 7%;
             }
 
                 .board .cell .chip {
-                    display: flex;
-                    height: 100%;
+                    position: absolute;
                     width: 100%;
+                    height: 100%;
+                    display: flex;
                     justify-content: center;
                     align-items: center;
                     overflow: hidden;
                     text-align: justify;
                     font-weight: bold;
                     background-color: honeydew;
-                    //border-radius:5%;
+                    z-index: 1;
+                    border-radius:7%;
                 }
+
+        @keyframes chip-value-changed {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes chip-appear {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -62,14 +91,20 @@
     </div>
 
     <template id="game2048-chip" hidden>
-        <div class="chip" :style="style">{{value}}</div>
+        <transition :css="false" @enter="enter">
+            <div class="chip" :style="style">{{chip.value}}</div>
+        </transition>
     </template>
 
     <template id="game2048" hidden>
-        <div class="board" :tabindex="tabIndex" :style="boardStyle">
+        <div class="board-container">
             <h1 v-if="isGameEnded">GAME OVER!</h1>
-            <div v-for="(cl, index) in cells" class="cell" :style="cellStyle">
-                <game2048-chip v-for="ch in cl.chips" :key="ch" :value="ch.value" :size-px="cellSizePx"></game2048-chip>
+            <div class="board" :tabindex="tabIndex" :style="boardStyle">
+                <div ref="cells" v-for="(cl, index) in cells" class="cell" :key="cl" :style="cellStyle">
+                    <game2048-chip ref="chips" v-for="(ch, i) in cl.chips" :key="ch" :animation-time-ms="animationTimeMs"
+                                   :chip="ch"
+                                   :size-px="cellSizePx"></game2048-chip>
+                </div>
             </div>
         </div>
     </template>
@@ -81,19 +116,46 @@
             Vue.component('game2048-chip', {
                 template: '#game2048-chip',
                 props: {
-                    value: { type: Number },
-                    sizePx: { type: Number }
+                    chip: { type: Object },
+                    sizePx: { type: Number },
+                    animationTimeMs: { type: Number }
                 },
                 computed: {
                     style: function () {
                         return {
-                            fontSize: this.fontSizePx + 'px'
+                            fontSize: this.fontSizePx + 'px',
                         }
                     },
                     fontSizePx: function () {
-                        var n = Math.floor(Math.log(this.value) / Math.log(10))
+                        var n = Math.floor(Math.log(this.chip.value) / Math.log(10))
                         var b = Math.floor(this.sizePx / 1.5)
                         return b * (n < 8 ? fontSizeCoefs[n] : fontSizeCoefs[7])
+                    }
+                },
+                watch: {
+                    'chip.value': function () {
+                        var el = this.$el
+                        if (el) {
+                            el.style.animation = 'chip-value-changed ' + this.animationTimeMs + 'ms'
+                        }
+                    }
+                },
+                methods: {
+                    enter: function (el, done) {
+                        var self = this
+                        if (this.chip.prevRelPos) {
+                            var p = this.chip.prevRelPos
+                            requestAnimationFrame(function () {
+                                el.style.transform = 'translate(' + p.left + 'px,' + p.top + 'px)'
+                                requestAnimationFrame(function () {
+                                    el.style.transition = 'transform ' + self.animationTimeMs + 'ms'
+                                    el.style.transform = '';
+                                })
+                            })
+                        }
+                        else {
+                            el.style.animation = 'chip-appear ' + this.animationTimeMs + 'ms'
+                        }
                     }
                 }
             })
@@ -101,22 +163,30 @@
 
         (function () {
 
+            function deffered(delayMs, func) {
+                var executed = false;
+                function execute() {
+                    if (!executed) {
+                        func()
+                        executed = true
+                    }
+                }
+                function renew() {
+                    executed = false
+                    setTimeout(execute, delayMs)
+                }
+                renew()
+                return {
+                    finish: execute,
+                    renew: renew
+                }
+            }
+
             var keyMap = {}
             keyMap[37] = 'left'
             keyMap[38] = 'up'
             keyMap[39] = 'right'
             keyMap[40] = 'down'
-
-            function createKeyboardHandler(game, onMove) {
-                return function (e) {
-                    var m = keyMap[e.keyCode]
-                    if (m == null)
-                        return
-                    var boardChanges = game[m]()
-                    onMove(boardChanges)
-                    e.preventDefault()
-                }
-            }
 
             Vue.component('game2048', {
                 template: '#game2048',
@@ -124,7 +194,8 @@
                     size: { type: Number },
                     listenOwnEventsOnly: { type: Boolean, default: false },
                     tabIndex: { type: Number, default: 1 },
-                    boardSizePx: { type: Number, default: 0 }
+                    boardSizePx: { type: Number, default: 0 },
+                    animationTimeMs: { type: Number, default: 150 }
                 },
                 data: function () {
                     return {
@@ -158,7 +229,6 @@
                             height: this.cellSizePct + '%',
                             marginLeft: this.cellMarginPct + '%',
                             marginTop: this.cellMarginPct + '%',
-                            borderRadius: '7%'
                         }
                     },
                     cellSizePct: function () {
@@ -174,42 +244,71 @@
                 },
                 methods: {
                     startGame: function () {
-                        var self = this
                         this.emptyCells()
-
                         var game = createGame2048(this.size)
                         for (var i = Math.max(2, this.size - 2); i > 0; i--) {
                             var chips = game.turn()
                             this.addChips(chips)
                         }
-
                         this.isGameStarted = true
                         this.isGameEnded = false
-
-                        var kh = createKeyboardHandler(game, function (boardChanges) {
-                            if (boardChanges.moves.length > 0) {
-                                self.moveChips(boardChanges.moves)
-                                self.consolidateChips(boardChanges.consolidations)
-                                for (var i = Math.max(1, self.size - 3); i > 0; i--) {
-                                    var chips = game.turn()
-                                    self.addChips(chips)
-                                }
-                            }
-                            if (!game.canMove()) {
-                                listenKeysOn.removeEventListener('keydown', kh)
-                                self.endGame()
-                            }
-                        })
-
-                        var listenKeysOn = this.listenOwnEventsOnly ? this.$el : document
-                        listenKeysOn.addEventListener('keydown', kh)
+                        this.runKeyboardControl(game)
                         this.$emit('game-started', this)
                     },
+
+                    runKeyboardControl: function (game) {
+                        var listenKeysOn = this.listenOwnEventsOnly ? this.$el : document
+                        var h
+                        var doGameMove = this.createGameMove(game, function () {
+                            listenKeysOn.removeEventListener('keydown', h)
+                        })
+                        h = function (e) {
+                            var m = keyMap[e.keyCode]
+                            if (m == null)
+                                return
+                            e.preventDefault()
+                            doGameMove(m)
+                        }
+                        listenKeysOn.addEventListener('keydown', h)
+                    },
+
+                    createGameMove: function (game, onEnd) {
+                        var self = this
+                        var boardChanges = { consolidations:[]}
+                        var newChips = []
+                        var consolidateAndAddChipsDeffered = deffered(self.animationTimeMs,
+                            function () {
+                                self.consolidateChips(boardChanges.consolidations)
+                                self.addChips(newChips)
+                            })
+
+                        return function (m) {
+                            consolidateAndAddChipsDeffered.finish()
+
+                            boardChanges = game[m]()
+                            newChips.length = 0
+                            if (boardChanges.moves.length > 0) {
+                                for (var i = Math.max(1, self.size - 3); i > 0; i--) {
+                                    var chips = game.turn()
+                                    chips.push.apply(newChips, chips)
+                                }
+                            }
+                            self.moveChips(boardChanges.moves)
+                            consolidateAndAddChipsDeffered.renew()
+                            if (!game.canMove()) {
+                                self.endGame()
+                                if (onEnd)
+                                    onEnd()
+                            }
+                        }
+                    },
+
                     endGame: function () {
                         this.isGameStarted = false
                         this.isGameEnded = true
                         this.$emit('game-ended', this)
                     },
+
                     consolidateChips: function (consolidations) {
                         var self = this
                         consolidations.forEach(function (c) {
@@ -223,11 +322,16 @@
                         for (var i = 0; i < moves.length; i++)
                             this.moveChip(moves[i].from, moves[i].to)
                     },
-                    moveChip: function (from, to, value) {
-                        var ti = this.getCellIndex(to)
-                        var fi = this.getCellIndex(from)
-                        this.cells[ti].chips.push(this.cells[fi].chips[0])
-                        this.cells[fi].chips.pop()
+                    moveChip: function (from, to) {
+                        var fcell = this.getCell(from)
+                        var fcellEl = this.getCellEl(from)
+                        var tcell = this.getCell(to)
+                        var tcellEl = this.getCellEl(to)
+                        var chip = fcell.chips.splice(0, 1)[0]
+                        var fboundRect = fcellEl.getBoundingClientRect()
+                        var tboundRect = tcellEl.getBoundingClientRect()
+                        chip.prevRelPos = { left: fboundRect.left - tboundRect.left, top: fboundRect.top - tboundRect.top }
+                        tcell.chips.push(chip)
                     },
                     addChips: function (chips) {
                         chips.forEach(this.addChip)
@@ -238,8 +342,11 @@
                     getCellIndex: function (c) {
                         return c.y * this.size + c.x
                     },
-                    getCell: function(c) {
+                    getCell: function (c) {
                         return this.cells[this.getCellIndex(c)]
+                    },
+                    getCellEl: function (c) {
+                        return this.$refs.cells[this.getCellIndex(c)]
                     },
                     createCells: function () {
                         return Array.apply(null, { length: this.size * this.size })
