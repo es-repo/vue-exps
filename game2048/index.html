@@ -99,11 +99,11 @@
                     <input v-model.number="size[i-1]" type="range" min="3" max="20" style="width:100%" />
                     <button @click="startGame(i)">New Game</button>
                 </div>
-                <div class="game-container">
+                <div class="game-container" :style="gameContainerStyle">
                     <div v-if="gameEnded[i-1]">
                         <div class="overlay half-white"></div>
-                        <div class="overlay game-over">
-                            <h1>Game over!</h1>
+                        <div class="overlay game-over" :style="gameOverStyle">
+                            <p>Game over!</p>
                         </div>
                     </div>
                     <div style="position:">
@@ -397,8 +397,18 @@
                     gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false }),
                     gameEnded: Array.apply(null, { length: gamesCount }).map(function () { return false })
                 }
-            }
-            ,
+            },
+            computed: {
+                gameOverStyle: function () {
+                    return { fontSize: this.boardSizePx / 5 + 'px' }
+                },
+                gameContainerStyle: function () {
+                    return {
+                        width: this.boardSizePx + 'px',
+                        height: this.boardSizePx + 'px'
+                    }
+                }
+            },
             methods: {
                 startGame: function (n) {
                     this.$refs['game' + n][0].startGame()
