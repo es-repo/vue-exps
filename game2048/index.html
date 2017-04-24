@@ -29,10 +29,42 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-weight: bold
             }
 
         .game-over {
+            font-weight: bold;
+        }
+
+        .appearing-fast {
+            animation: appearing 1s;
+        }
+
+        .appearing {
+            animation: appearing 2s;
+        }
+
+        .appearing07 {
+            animation: appearing07 2s;
+        }
+
+        @keyframes appearing {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes appearing07 {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0.7;
+            }
         }
 
         .board {
@@ -99,10 +131,10 @@
                     <input v-model.number="size[i-1]" type="range" min="3" max="20" style="width:100%" />
                     <button @click="startGame(i)">New Game</button>
                 </div>
-                <div class="game-container" :style="gameContainerStyle">
-                    <div v-if="gameEnded[i-1]">
-                        <div class="overlay half-white"></div>
-                        <div class="overlay game-over" :style="gameOverStyle">
+                <div class="game-container appearing-fast" :style="gameContainerStyle">
+                    <div v-if="gameEnded[i-1]" class="">
+                        <div class="overlay half-white appearing07"></div>
+                        <div class="overlay game-over appearing" :style="gameOverStyle">
                             <p>Game over!</p>
                         </div>
                     </div>
