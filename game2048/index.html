@@ -339,8 +339,8 @@
                         var self = this
                         if (this.chip.prevRelPos) {
                             var p = this.chip.prevRelPos
+                            el.style.transform = 'translate(' + p.left + 'px,' + p.top + 'px)'
                             requestAnimationFrame(function () {
-                                el.style.transform = 'translate(' + p.left + 'px,' + p.top + 'px)'
                                 requestAnimationFrame(function () {
                                     el.style.transition = 'transform ' + self.animationTimeMs + 'ms'
                                     el.style.transform = '';
