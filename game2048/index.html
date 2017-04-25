@@ -34,10 +34,10 @@
                 .main-container .game-controls .button {
                     background-color: #35495e;
                     border: none;
-                    border-radius: 7% / 14%;
+                    border-radius: 5% / 9%;
                     width: 25%;
                     height: 75%;
-                    color: honeydew;
+                    color: white;
                     outline: none;
                     animation: appearing;
                     font-weight: bold;
@@ -46,13 +46,42 @@
                     animation: appearing 0.5s;
                 }
 
-                .main-container .game-controls .size-input {
+                .main-container .game-controls .size-control {
                     width: 75%;
+                    font-weight: bold;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                    animation: appearing 0.5s;
                 }
+
+                    .main-container .game-controls .size-control input[type=radio]:not(checked) {
+                        position: absolute;
+                        opacity: 0;
+                    }
+
+                    .main-container .game-controls .size-control input[type=radio] + label {
+                        cursor: pointer;
+                        border: 5px solid #35495e;
+                        height: 30px;
+                        width: 30px;
+                        display: inline-flex;
+                        border-radius: 50%;
+                        justify-content: center;
+                        align-items: center;
+                        position: relative;
+                        vertical-align: middle;
+                        font-weight: bold;
+                        transition: background-color 0.3s, color 0.3s;
+                    }
+
+                    .main-container .game-controls .size-control input[type=radio]:checked + label {
+                        background: #41b883;
+                        color: honeydew;
+                    }
 
             .main-container .game-container {
                 position: relative;
-                //border: solid red;
             }
 
                 .main-container .game-container .overlay {
@@ -159,7 +188,9 @@
         <div>
             <div v-for="i in 1" class="main-container appearing" :style="mainContainerStyle">
                 <div class="game-controls" :style="gameControlsStyle">
-                    <input v-if="!gameStarted[i-1]" v-model.number="size[i-1]" type="range" min="3" max="20" class="size-input" />
+                    <div class="size-control" v-if="!gameStarted[i-1]">
+                        Size:<template v-for="s in sizes"><input type="radio" :id="'size-radio'+s" :value="s" v-model.number="size[i-1]" /><label :for="'size-radio'+s">{{s}}</label></template>&nbsp;
+                    </div>
                     <button v-if="!gameStarted[i-1]" @click="startGame(i)" class="button" key="start">New Game</button>
                     <button v-else @click="endGame(i)" class="button" key="end">End</button>
                 </div>
@@ -450,11 +481,12 @@
         var app = new Vue({
             el: '#app',
             data: function () {
-                var gamesCount = 4
+                var gamesCount = 1
                 return {
-                    boardSizePx: 250,
+                    boardSizePx: 450,
                     gamesCount: gamesCount,
                     size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
+                    sizes: [3, 4, 5, 6],
                     gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false }),
                     gameEnded: Array.apply(null, { length: gamesCount }).map(function () { return false })
                 }
@@ -472,12 +504,12 @@
                 mainContainerStyle: function () {
                     return {
                         width: this.boardSizePx + 'px',
-                        height: (this.boardSizePx * 1.2) + 'px'
+                        height: (this.boardSizePx * 1.15) + 'px'
                     }
                 },
                 gameControlsStyle: function () {
                     return {
-                        height: (this.boardSizePx * 0.2) + 'px'
+                        height: (this.boardSizePx * 0.15) + 'px'
                     }
                 }
             },
