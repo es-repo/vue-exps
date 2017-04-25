@@ -184,30 +184,32 @@
 </head>
 <body>
     <div id="app">
-        <input v-model.number="boardSizePx" type="range" min="50" max="1000" step="10" />
-        <div>
-            <div v-for="i in 1" class="main-container appearing" :style="mainContainerStyle">
-                <div class="game-controls" :style="gameControlsStyle">
-                    <div class="size-control" v-if="!gameStarted[i-1]">
-                        Size:<template v-for="s in sizes"><input type="radio" :id="'size-radio'+s" :value="s" v-model.number="size[i-1]" /><label :for="'size-radio'+s">{{s}}</label></template>&nbsp;
-                    </div>
-                    <button v-if="!gameStarted[i-1]" @click="startGame(i)" class="button" key="start">New Game</button>
-                    <button v-else @click="endGame(i)" class="button" key="end">End</button>
+        <div class="main-container appearing" :style="mainContainerStyle">
+            <div class="game-controls" :style="gameControlsStyle">
+                <div class="size-control" v-if="!gameStarted">
+                    Size:
+                    <template v-for="s in sizes">
+                        <input type="radio" :id="'size-radio'+s" :value="s" v-model.number="size" />
+                        <label :for="'size-radio'+s">{{s}}</label>
+                    </template>&nbsp;
                 </div>
-                <div class="game-container" :style="gameContainerStyle">
-                    <div v-if="gameEnded[i-1]">
-                        <div class="overlay half-white appearing07"></div>
-                        <div class="overlay game-over appearing" :style="gameOverStyle">
-                            <p>Game over!</p>
-                        </div>
+                <button v-if="!gameStarted" @click="startGame()" class="button" key="start">New Game</button>
+                <button v-else @click="gameStarted=false" class="button" key="end">End</button>
+            </div>
+            <div class="game-container" :style="gameContainerStyle">
+                <div v-if="gameEnded">
+                    <div class="overlay half-white appearing07"></div>
+                    <div class="overlay game-over appearing" :style="gameOverStyle">
+                        <p>Game over!</p>
                     </div>
-                    <game-2048 :ref="'game' + i" :size="size[i-1]"
-                               :listen-own-events-only="false"
-                               :tab-index="i"
-                               :board-size-px="boardSizePx"
-                               @game-started="onGameStarted(i)"
-                               @game-ended="onGameEnded(i)"></game-2048>
                 </div>
+                <game-2048 ref="game" :size="size"
+                           :listen-own-events-only="false"
+                           :tab-index="1"
+                           :board-size-px="boardSizePx"
+                           :game-started="gameStarted"
+                           @game-started="onGameStarted"
+                           @game-ended="onGameEnded"></game-2048>
             </div>
         </div>
     </div>
@@ -314,13 +316,12 @@
                     listenOwnEventsOnly: { type: Boolean, default: false },
                     tabIndex: { type: Number, default: 1 },
                     boardSizePx: { type: Number, default: 0 },
-                    animationTimeMs: { type: Number, default: 150 }
+                    animationTimeMs: { type: Number, default: 150 },
+                    gameStarted: { type: Boolean, default: false }
                 },
                 data: function () {
                     return {
                         cells: this.createCells(),
-                        isGameStarted: false,
-                        isGameEnded: false,
                         boardSizeAutoPx: 0,
                     }
                 },
@@ -332,6 +333,14 @@
                 watch: {
                     size: function () {
                         this.cells = this.createCells()
+                    },
+                    gameStarted: function (nv, ov) {
+                        if (nv) {
+                            this.startGame()
+                        }
+                        else {
+                            this.endGame();
+                        }
                     }
                 },
                 computed: {
@@ -369,8 +378,6 @@
                             var chips = game.turn()
                             this.addChips(chips)
                         }
-                        this.isGameStarted = true
-                        this.isGameEnded = false
                         this.runKeyboardControl(game)
                         this.$emit('game-started', this)
                     },
@@ -423,8 +430,6 @@
                     },
 
                     endGame: function () {
-                        this.isGameStarted = false
-                        this.isGameEnded = true
                         this.$emit('game-ended', this)
                     },
 
@@ -481,14 +486,12 @@
         var app = new Vue({
             el: '#app',
             data: function () {
-                var gamesCount = 1
                 return {
                     boardSizePx: 450,
-                    gamesCount: gamesCount,
-                    size: Array.apply(null, { length: gamesCount }).map(function () { return 4 }),
+                    size: 4,
                     sizes: [3, 4, 5, 6],
-                    gameStarted: Array.apply(null, { length: gamesCount }).map(function () { return false }),
-                    gameEnded: Array.apply(null, { length: gamesCount }).map(function () { return false })
+                    gameStarted: false,
+                    gameEnded: false
                 }
             },
             computed: {
@@ -513,20 +516,22 @@
                     }
                 }
             },
+            watch: {
+                size: function () {
+                    this.gameEnded = false
+                }
+            },
             methods: {
-                startGame: function (n) {
-                    this.$refs['game' + n][0].startGame()
+                startGame: function () {
+                    this.gameStarted = true
                 },
-                endGame: function (n) {
-                    this.$refs['game' + n][0].endGame()
-                },
-                onGameStarted: function (n) {
-                    Vue.set(this.gameStarted, n - 1, true)
-                    Vue.set(this.gameEnded, n - 1, false)
+                onGameStarted: function () {
+                    this.gameStarted = true
+                    this.gameEnded = false
                 },
                 onGameEnded: function (n) {
-                    Vue.set(this.gameStarted, n - 1, false)
-                    Vue.set(this.gameEnded, n - 1, true)
+                    this.gameStarted = false
+                    this.gameEnded = true
                 }
             }
         })
