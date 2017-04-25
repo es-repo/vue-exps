@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>2048 Game</title>
     <script src="../scripts/vue.js"></script>
+    <script src="../scripts/tweenlite.min.js"></script>
     <script src="game2048.js"></script>
     <style>
         body, html {
@@ -18,17 +19,58 @@
         }
 
         .main-container {
-            //border: solid;
             display: flex;
-            flex-direction: column
+            flex-direction: column;
+            margin: 0 auto;
         }
+
+            .main-container .score-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+                .main-container .score-container .game-aim {
+                    font-weight: bold;
+                    font-size: 4em;
+                }
+
+                .main-container .score-container .scores {
+                    font-weight: bold;
+                    font-size: 1.5em;
+                    display: flex;
+                    justify-content: space-around;
+                    width: 50%;
+                }
+
+                    .main-container .score-container .scores .score {
+                        position: relative;
+                        text-align: center;
+                        color: white;
+                        background-color: #9aa4af;
+                        border-radius: 5%/ 8%;
+                        width: 100%;
+                        margin: 2%;
+                    }
+
+                        .main-container .score-container .scores .score .score-inc {
+                            position: absolute;
+                            left: 0;
+                            color: #2c3e50;
+                            width: 100%;
+                            animation: up-disappear 1.5s;
+                        }
+
+                        .main-container .score-container .scores .score .label {
+                            color: honeydew;
+                        }
+
 
             .main-container .game-controls {
                 display: flex;
                 justify-content: flex-end;
                 align-items: center;
                 width: 100%;
-                //border: solid;
             }
 
                 .main-container .game-controls .button {
@@ -44,13 +86,14 @@
                     overflow: hidden;
                     cursor: pointer;
                     animation: appearing 0.5s;
+                    font-size: 18px;
                 }
 
                 .main-container .game-controls .size-control {
                     width: 75%;
                     font-weight: bold;
                     display: flex;
-                    justify-content: space-around;
+                    justify-content: space-between;
                     align-items: center;
                     animation: appearing 0.5s;
                 }
@@ -114,6 +157,17 @@
 
             100% {
                 opacity: 1;
+            }
+        }
+
+        @keyframes up-disappear {
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
             }
         }
 
@@ -183,8 +237,25 @@
     </style>
 </head>
 <body>
-    <div id="app">
+    <div id="app" style="display:none">
         <div class="main-container appearing" :style="mainContainerStyle">
+            <div class="score-container" :style="scoreContainerStyle">
+                <div class="game-aim">
+                    {{gameAim}}
+                </div>
+                <div class="scores">
+                    <div class="score">
+                        <div class="label">Score</div>
+                        <div>
+                            {{score}}
+                            <transition>
+                                <span v-if="scoreInc!=''" class="score-inc">{{scoreInc}}</span>
+                            </transition>
+                        </div>
+                    </div>
+                    <div class="score"><div class="label">Best</div><div>{{bestScore}}</div></div>
+                </div>
+            </div>
             <div class="game-controls" :style="gameControlsStyle">
                 <div class="size-control" v-if="!gameStarted">
                     Size:
@@ -207,9 +278,11 @@
                            :listen-own-events-only="false"
                            :tab-index="1"
                            :board-size-px="boardSizePx"
-                           :game-started="gameStarted"
-                           @game-started="onGameStarted"
-                           @game-ended="onGameEnded"></game-2048>
+                           :started="gameStarted"
+                           @started="onGameStarted"
+                           @ended="onGameEnded"
+                           @score="onGameScore"
+                           @aim-changed="onGameAimChanged"></game-2048>
             </div>
         </div>
     </div>
@@ -309,6 +382,12 @@
             keyMap[39] = 'right'
             keyMap[40] = 'down'
 
+            var aimMap = []
+            aimMap[3] = 256
+            aimMap[4] = 2048
+            aimMap[5] = 4096
+            aimMap[6] = 8192
+
             Vue.component('game2048', {
                 template: '#game2048',
                 props: {
@@ -317,12 +396,13 @@
                     tabIndex: { type: Number, default: 1 },
                     boardSizePx: { type: Number, default: 0 },
                     animationTimeMs: { type: Number, default: 150 },
-                    gameStarted: { type: Boolean, default: false }
+                    started: { type: Boolean, default: false }
                 },
                 data: function () {
                     return {
                         cells: this.createCells(),
                         boardSizeAutoPx: 0,
+                        aim: 2048
                     }
                 },
                 mounted: function () {
@@ -333,8 +413,10 @@
                 watch: {
                     size: function () {
                         this.cells = this.createCells()
+                        this.aim = aimMap[this.size] || 2048
+                        this.$emit('aim-changed', this.aim)
                     },
-                    gameStarted: function (nv, ov) {
+                    started: function (nv, ov) {
                         if (nv) {
                             this.startGame()
                         }
@@ -379,7 +461,7 @@
                             this.addChips(chips)
                         }
                         this.runKeyboardControl(game)
-                        this.$emit('game-started', this)
+                        this.$emit('started', this)
                     },
 
                     runKeyboardControl: function (game) {
@@ -393,7 +475,7 @@
                             doGameMove(m)
                         }
                         listenKeysOn.addEventListener('keydown', h)
-                        this.$once('game-ended', function () {
+                        this.$once('ended', function () {
                             listenKeysOn.removeEventListener('keydown', h)
                         })
                     },
@@ -418,7 +500,14 @@
                                     var chips = game.turn()
                                     chips.push.apply(newChips, chips)
                                 }
+                                if (boardChanges.scoreInc > 0) {
+                                    self.$emit('score', { score: game.score(), scoreInc: boardChanges.scoreInc })
+                                    if (game.score() >= self.aim) {
+                                        self.$emit('aim-reached')
+                                    }
+                                }
                             }
+
                             self.moveChips(boardChanges.moves)
                             consolidateAndAddChipsDeffered.renew()
                             if (!game.canMove()) {
@@ -430,7 +519,7 @@
                     },
 
                     endGame: function () {
-                        this.$emit('game-ended', this)
+                        this.$emit('ended', this)
                     },
 
                     consolidateChips: function (consolidations) {
@@ -491,8 +580,18 @@
                     size: 4,
                     sizes: [3, 4, 5, 6],
                     gameStarted: false,
-                    gameEnded: false
+                    gameEnded: false,
+                    gameAim: 2048,
+                    score: 0,
+                    scoreInc: '',
+                    bestScore: 0
                 }
+            },
+            created: function () {
+                this.loadBestScore()
+            },
+            mounted: function () {
+                this.$el.style.display = ''
             },
             computed: {
                 gameOverStyle: function () {
@@ -507,10 +606,14 @@
                 mainContainerStyle: function () {
                     return {
                         width: this.boardSizePx + 'px',
-                        height: (this.boardSizePx * 1.15) + 'px'
                     }
                 },
                 gameControlsStyle: function () {
+                    return {
+                        height: (this.boardSizePx * 0.15) + 'px'
+                    }
+                },
+                scoreContainerStyle: function () {
                     return {
                         height: (this.boardSizePx * 0.15) + 'px'
                     }
@@ -522,16 +625,50 @@
                 }
             },
             methods: {
+                loadBestScore: function () {
+                    var bs = document.cookie
+                    this.bestScore = bs ? parseInt(bs) : 0
+                },
+                saveBestScore: function () {
+                    document.cookie = this.bestScore
+                },
                 startGame: function () {
                     this.gameStarted = true
+                    this.score = 0
                 },
                 onGameStarted: function () {
                     this.gameStarted = true
                     this.gameEnded = false
                 },
-                onGameEnded: function (n) {
+                onGameEnded: function () {
                     this.gameStarted = false
                     this.gameEnded = true
+                    this.saveBestScore()
+                },
+                onGameScore: function (args) {
+                    var s = { score: this.score }
+                    var self = this
+                    TweenLite.to(s, 0.3, {
+                        score: args.score, ease: Power0.easeNone, onUpdate: function () {
+                            self.score = Math.floor(s.score)
+                        }
+                    })
+
+                    if (args.score > this.bestScore) {
+                        var bs = { score: this.bestScore }
+                        TweenLite.to(bs, 0.3, {
+                            score: args.score, ease: Power0.easeNone, onUpdate: function () {
+                                self.bestScore = Math.floor(bs.score)
+                            }
+                        })
+                        this.bestScore = args.score
+                    }
+
+                    this.scoreInc = args.scoreInc + '+'
+                    Vue.nextTick(function () { self.scoreInc = '' })
+                },
+                onGameAimChanged: function (aim) {
+                    this.gameAim = aim
                 }
             }
         })

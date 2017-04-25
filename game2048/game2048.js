@@ -2,6 +2,7 @@
 	size = size || 4
 	var size2 = size * size
 	var size1_2 = size / 2
+	var score = 0
 
 	var board = Array.apply(null, { length: size })
 		.map(function () {
@@ -53,6 +54,7 @@
 	}
 
 	function move(rot) {
+		var scoreInc = 0
 		var moves = []
 		var consolidations = []
 		var c = {}
@@ -82,20 +84,24 @@
 							from: { x: c.x, y: c.y },
 							to: { x: tc.x, y: tc.y }
 						})
-						if (v > 0)
+						if (v > 0) {
 							consolidations.push({ x: tc.x, y: tc.y, value: v })
+							scoreInc += v
+							score += v
+						}
 					}
 				}
 			}
 		}
 		return {
-			moves: moves, consolidations: consolidations
+			moves: moves, consolidations: consolidations, scoreInc: scoreInc
 		}
 	}
 
 	return {
 		size: size,
 		board: board,
+		score: function () { return score },
 		turn: function () {
 			var chips = []
 			var p = findRandomEmptyPos()
@@ -121,8 +127,8 @@
 			return move(rot270)
 		},
 		canMove: function () {
-			for (var c = { y: 0 }, cr = { y: 0 }, cb = {y:1}; c.y < size; c.y++, cr.y++, cb.y++)
-				for (c.x = 0, cr.x=1, cb.x=0; c.x < size; c.x++, cr.x++, cb.x++) {
+			for (var c = { y: 0 }, cr = { y: 0 }, cb = { y: 1 }; c.y < size; c.y++ , cr.y++ , cb.y++)
+				for (c.x = 0, cr.x = 1, cb.x = 0; c.x < size; c.x++ , cr.x++ , cb.x++) {
 					if (cellIsEmpty(c) ||
 						(cr.x < size && cellsEqual(c, cr)) ||
 						(cb.y < size && cellsEqual(c, cb)))
