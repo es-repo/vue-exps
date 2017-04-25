@@ -18,18 +18,17 @@
         }
 
         .main-container {
-            border: solid;
+            //border: solid;
             display: flex;
             flex-direction: column
         }
 
             .main-container .game-controls {
-                display: inline-flex;
+                display: flex;
                 justify-content: flex-end;
                 align-items: center;
                 width: 100%;
-                height: 100%;
-                border: solid;
+                //border: solid;
             }
 
                 .main-container .game-controls .button {
@@ -48,12 +47,12 @@
                 }
 
                 .main-container .game-controls .size-input {
-                    width: 70%;
+                    width: 75%;
                 }
 
             .main-container .game-container {
                 position: relative;
-                border: solid red;
+                //border: solid red;
             }
 
                 .main-container .game-container .overlay {
@@ -158,8 +157,8 @@
     <div id="app">
         <input v-model.number="boardSizePx" type="range" min="50" max="1000" step="10" />
         <div>
-            <div v-for="i in gamesCount" class="main-container appearing" :style="mainContainerStyle">
-                <div class="game-controls">
+            <div v-for="i in 1" class="main-container appearing" :style="mainContainerStyle">
+                <div class="game-controls" :style="gameControlsStyle">
                     <input v-if="!gameStarted[i-1]" v-model.number="size[i-1]" type="range" min="3" max="20" class="size-input" />
                     <button v-if="!gameStarted[i-1]" @click="startGame(i)" class="button" key="start">New Game</button>
                     <button v-else @click="endGame(i)" class="button" key="end">End</button>
@@ -474,6 +473,11 @@
                     return {
                         width: this.boardSizePx + 'px',
                         height: (this.boardSizePx * 1.2) + 'px'
+                    }
+                },
+                gameControlsStyle: function () {
+                    return {
+                        height: (this.boardSizePx * 0.2) + 'px'
                     }
                 }
             },
