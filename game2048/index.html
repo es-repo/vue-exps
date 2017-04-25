@@ -17,34 +17,66 @@
             opacity: 0.7;
         }
 
-        .game-container {
-            position: relative;
+        .main-container {
+            border: solid;
+            display: flex;
+            flex-direction: column
         }
 
-            .game-container .overlay {
+            .main-container .game-controls {
+                display: inline-flex;
+                justify-content: flex-end;
+                align-items: center;
                 width: 100%;
                 height: 100%;
-                position: absolute;
-                z-index: 2;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                border: solid;
             }
+
+                .main-container .game-controls .button {
+                    background-color: #35495e;
+                    border: none;
+                    border-radius: 7% / 14%;
+                    width: 25%;
+                    height: 75%;
+                    color: honeydew;
+                    outline: none;
+                    animation: appearing;
+                    font-weight: bold;
+                    overflow: hidden;
+                    cursor: pointer;
+                    animation: appearing 0.5s;
+                }
+
+                .main-container .game-controls .size-input {
+                    width: 70%;
+                }
+
+            .main-container .game-container {
+                position: relative;
+                border: solid red;
+            }
+
+                .main-container .game-container .overlay {
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    z-index: 2;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
 
         .game-over {
             font-weight: bold;
-        }
-
-        .appearing-fast {
-            animation: appearing 1s;
+            text-align: center;
         }
 
         .appearing {
-            animation: appearing 2s;
+            animation: appearing 1s;
         }
 
         .appearing07 {
-            animation: appearing07 2s;
+            animation: appearing07 1s;
         }
 
         @keyframes appearing {
@@ -123,31 +155,28 @@
     </style>
 </head>
 <body>
-    <div id="app" style="text-align:center;width:100%">
+    <div id="app">
         <input v-model.number="boardSizePx" type="range" min="50" max="1000" step="10" />
-        <div style="display:flex;flex-wrap:wrap">
-            <div v-for="i in gamesCount" style="margin:20px 20px;">
-                <div v-if="!gameStarted[i-1]">
-                    <input v-model.number="size[i-1]" type="range" min="3" max="20" style="width:100%" />
-                    <button @click="startGame(i)">New Game</button>
+        <div>
+            <div v-for="i in gamesCount" class="main-container appearing" :style="mainContainerStyle">
+                <div class="game-controls">
+                    <input v-if="!gameStarted[i-1]" v-model.number="size[i-1]" type="range" min="3" max="20" class="size-input" />
+                    <button v-if="!gameStarted[i-1]" @click="startGame(i)" class="button" key="start">New Game</button>
+                    <button v-else @click="endGame(i)" class="button" key="end">End</button>
                 </div>
-                <div class="game-container appearing-fast" :style="gameContainerStyle">
-                    <div v-if="gameEnded[i-1]" class="">
+                <div class="game-container" :style="gameContainerStyle">
+                    <div v-if="gameEnded[i-1]">
                         <div class="overlay half-white appearing07"></div>
                         <div class="overlay game-over appearing" :style="gameOverStyle">
                             <p>Game over!</p>
                         </div>
                     </div>
-                    <div style="position:">
-
-                        <game-2048 :ref="'game' + i" :size="size[i-1]"
-                                   :listen-own-events-only="false"
-                                   :tab-index="i"
-                                   :board-size-px="boardSizePx"
-                                   @game-started="onGameStarted(i)"
-                                   @game-ended="onGameEnded(i)"></game-2048>
-                    </div>
-
+                    <game-2048 :ref="'game' + i" :size="size[i-1]"
+                               :listen-own-events-only="false"
+                               :tab-index="i"
+                               :board-size-px="boardSizePx"
+                               @game-started="onGameStarted(i)"
+                               @game-ended="onGameEnded(i)"></game-2048>
                 </div>
             </div>
         </div>
@@ -327,8 +356,9 @@
                             doGameMove(m)
                         }
                         listenKeysOn.addEventListener('keydown', h)
-                        this.$once('game-ended', function () { 
-                            listenKeysOn.removeEventListener('keydown', h) })
+                        this.$once('game-ended', function () {
+                            listenKeysOn.removeEventListener('keydown', h)
+                        })
                     },
 
                     createGameMove: function (game) {
@@ -439,11 +469,20 @@
                         width: this.boardSizePx + 'px',
                         height: this.boardSizePx + 'px'
                     }
+                },
+                mainContainerStyle: function () {
+                    return {
+                        width: this.boardSizePx + 'px',
+                        height: (this.boardSizePx * 1.2) + 'px'
+                    }
                 }
             },
             methods: {
                 startGame: function (n) {
                     this.$refs['game' + n][0].startGame()
+                },
+                endGame: function (n) {
+                    this.$refs['game' + n][0].endGame()
                 },
                 onGameStarted: function (n) {
                     Vue.set(this.gameStarted, n - 1, true)
