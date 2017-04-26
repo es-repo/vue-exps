@@ -13,6 +13,7 @@
             color: #2c3e50;
             font-size: 18px;
             margin:0;
+            background-color:honeydew;
         }
 
         .half-white {
@@ -66,7 +67,7 @@
                         }
 
                         .main-container .score-container .scores .score .label {
-                            color: honeydew;
+                            color: white;
                             font-size:1rem;
                         }
 
@@ -125,7 +126,7 @@
 
                     .main-container .game-controls .size-control input[type=radio]:checked + label {
                         background: #41b883;
-                        color: honeydew;
+                        color: white;
                     }
 
             .main-container .game-container {
@@ -214,6 +215,7 @@
                     background-color: honeydew;
                     z-index: 1;
                     border-radius: 7%;
+                    
                 }
 
         @keyframes chip-value-changed {
@@ -311,6 +313,23 @@
 
         (function () {
             var fontSizeCoefs = [1, 1, 0.8, 0.65, 0.5, 0.4, 0.35, 0.32]
+            var backColors = []
+            backColors[2] = '#87E293'
+            backColors[4] = '#87E273'
+            backColors[8] = '#eecf40'
+            backColors[16] = '#ffaa4f'
+            backColors[64] = '#9ebbee'
+            backColors[32] = '#6bcae2'
+            backColors[128] = 'white'
+
+            var colors = []
+            colors[2] = 'white'
+            colors[4] = 'white'
+            colors[8] = 'white'
+            colors[16] = 'white'
+            colors[32] = 'white'
+            colors[64] = 'white'
+            colors[128] = '#2c3e50'
 
             Vue.component('game2048-chip', {
                 template: '#game2048-chip',
@@ -323,12 +342,30 @@
                     style: function () {
                         return {
                             fontSize: this.fontSizePx + 'px',
+                            backgroundColor: this.backColor,
+                            color: this.color,
+                            boxShadow: this.boxShadow
                         }
                     },
                     fontSizePx: function () {
                         var n = Math.floor(Math.log(this.chip.value) / Math.log(10))
                         var b = Math.floor(this.sizePx / 1.5)
                         return b * (n < 8 ? fontSizeCoefs[n] : fontSizeCoefs[7])
+                    },
+                    backColor: function () {
+                        return backColors[this.chip.value] || backColors[128]
+                    },
+                    color: function () {
+                        return colors[this.chip.value] || colors[128]
+                    },
+                    boxShadow: function () {
+                        if (this.chip.value < 256) {
+                            var s = this.sizePx * 0.15 + 'px '
+                            return '0 ' + s + s + '0 black'
+                        }
+                        else {
+                            return '0 0 20px ' + Math.min(10, (Math.log(this.chip.value) / Math.log(2) - 7)) + 'px white'
+                        }
                     }
                 },
                 watch: {
