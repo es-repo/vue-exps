@@ -254,7 +254,7 @@
                             </transition>
                         </div>
                     </div>
-                    <div class="score"><div class="label">Best</div><div>{{bestScore}}</div></div>
+                    <div class="score"><div class="label">Best</div><div>{{bestScore[size]}}</div></div>
                 </div>
             </div>
             <div class="game-controls" :style="gameControlsStyle">
@@ -625,16 +625,21 @@
         var app = new Vue({
             el: '#app',
             data: function () {
+                var sizes = [3, 4, 5, 6]
+                var bestScore = []
+                for (var i in sizes)
+                    bestScore[sizes[i]] = 0
+
                 return {
                     boardSizePx: 450,
                     size: 4,
-                    sizes: [3, 4, 5, 6],
+                    sizes: sizes,
                     gameStarted: false,
                     gameEnded: false,
                     gameAim: 2048,
                     score: 0,
                     scoreInc: '',
-                    bestScore: 0
+                    bestScore: bestScore
                 }
             },
             created: function () {
@@ -676,11 +681,20 @@
             },
             methods: {
                 loadBestScore: function () {
-                    var bs = document.cookie
-                    this.bestScore = bs ? parseInt(bs) : 0
+                    try {
+                        var bs = document.cookie
+                        if (bs)
+                            this.bestScore = bs ? JSON.parse(bs) : 0
+                    }
+                    catch (e) {
+                    }
                 },
                 saveBestScore: function () {
-                    document.cookie = this.bestScore
+                    try {
+                        document.cookie = JSON.stringify(this.bestScore)
+                    }
+                    catch (e) {
+                    }
                 },
                 startGame: function () {
                     this.gameStarted = true
@@ -704,14 +718,13 @@
                         }
                     })
 
-                    if (args.score > this.bestScore) {
-                        var bs = { score: this.bestScore }
+                    if (args.score > this.bestScore[this.size]) {
+                        var bs = { score: this.bestScore[this.size] }
                         TweenLite.to(bs, 0.3, {
                             score: args.score, ease: Power0.easeNone, onUpdate: function () {
-                                self.bestScore = Math.floor(bs.score)
+                                Vue.set(self.bestScore, self.size, Math.floor(bs.score))
                             }
                         })
-                        this.bestScore = args.score
                     }
 
                     this.scoreInc = args.scoreInc + '+'
