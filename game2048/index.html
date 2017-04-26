@@ -418,11 +418,11 @@
                     },
                     boxShadow: function () {
                         if (this.chip.value < 256) {
-                            var s = this.sizePx * 0.15 + 'px '
+                            var s = this.sizePx * 0.1 + 'px '
                             return '0 ' + s + s + '0 black'
                         }
                         else {
-                            return '0 0 20px ' + Math.min(10, (Math.log(this.chip.value) / Math.log(2) - 7)) + 'px white'
+                            return '0 0 20px ' + (2 + Math.min(10, (Math.log(this.chip.value) / Math.log(2) - 7))) + 'px white'
                         }
                     }
                 },
