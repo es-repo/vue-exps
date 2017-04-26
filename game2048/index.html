@@ -39,6 +39,64 @@
                     font-size: 4em;
                 }
 
+                .main-container .score-container .game-aim-reached {
+                    animation: game-aim-reached 7s, pulse 1s 7
+                }
+
+                @keyframes game-aim-reached{
+                    0% {
+                        color: #87E293;
+                        text-shadow: 0 0 10px #87E293;
+                    }
+
+                    14% {
+                        color: #87E273;
+                        text-shadow: 0 0 10px #87E273;
+                    }
+
+                    28% {
+                        color: #eecf40;
+                        text-shadow: 0 0 10px #eecf40;
+                    }
+
+                    43% {
+                        color: #ffaa4f;
+                        text-shadow: 0 0 10px #ffaa4f;
+                    }
+
+                    57% {
+                        color: #9ebbee;
+                        text-shadow: 0 0 10px #9ebbee;
+                    }
+
+                    71% {
+                        color: #6bcae2;
+                        text-shadow: 0 0 10px #6bcae2;
+                    }
+
+                    86% {
+                        color: white;
+                        text-shadow: 0 0 10px white;
+                    }
+
+                    100% {
+                        color: #2c3e50;
+                        text-shadow: 0 0 10px #2c3e50;
+                    }
+                }
+
+                @keyframes pulse{
+                    0%{
+                        transform: scale(1)
+                    }
+                    50%{
+                        transform: scale(1.2)
+                    }
+                    100% {
+                        transform: scale(1)
+                    }
+                }
+
                 .main-container .score-container .scores {
                     font-weight: bold;
                     font-size: 1.5em;
@@ -246,7 +304,7 @@
     <div id="app" style="display:none">
         <div class="main-container appearing" :style="mainContainerStyle">
             <div class="score-container" :style="scoreContainerStyle">
-                <div class="game-aim">
+                <div class="game-aim" v-bind:class="{'game-aim-reached':gameAimReached}">
                     {{gameAim}}
                 </div>
                 <div class="scores">
@@ -288,7 +346,8 @@
                            @started="onGameStarted"
                            @ended="onGameEnded"
                            @score="onGameScore"
-                           @aim-changed="onGameAimChanged"></game-2048>
+                           @aim-changed="onGameAimChanged"
+                           @aim-reached="onGameAimReached"></game-2048>
             </div>
         </div>
     </div>
@@ -594,8 +653,11 @@
                                 }
                                 if (boardChanges.scoreInc > 0) {
                                     self.$emit('score', { score: game.score(), scoreInc: boardChanges.scoreInc })
-                                    if (game.score() >= self.aim) {
-                                        self.$emit('aim-reached')
+                                    for (var i = 0; i < boardChanges.consolidations.length; i++) {
+                                        if (boardChanges.consolidations[i].value == self.aim) {
+                                            self.$emit('aim-reached')
+                                            break
+                                        }
                                     }
                                 }
                             }
@@ -679,6 +741,7 @@
                     gameStarted: false,
                     gameEnded: false,
                     gameAim: 2048,
+                    gameAimReached: false,
                     score: 0,
                     scoreInc: '',
                     bestScore: bestScore
@@ -752,6 +815,7 @@
                 onGameEnded: function () {
                     this.gameStarted = false
                     this.gameEnded = true
+                    this.gameAimReached = false
                     this.saveBestScore()
                 },
                 onGameScore: function (args) {
@@ -777,6 +841,9 @@
                 },
                 onGameAimChanged: function (aim) {
                     this.gameAim = aim
+                },
+                onGameAimReached: function () {
+                    this.gameAimReached = true 
                 }
             }
         })
