@@ -12,6 +12,7 @@
             font-family: 'Source Sans Pro', Arial, sans-serif;
             color: #2c3e50;
             font-size: 18px;
+            margin:0;
         }
 
         .half-white {
@@ -23,6 +24,7 @@
             display: flex;
             flex-direction: column;
             margin: 0 auto;
+            padding:1%;
         }
 
             .main-container .score-container {
@@ -40,7 +42,7 @@
                     font-weight: bold;
                     font-size: 1.5em;
                     display: flex;
-                    justify-content: space-around;
+                    justify-content: space-between;
                     width: 50%;
                 }
 
@@ -51,7 +53,8 @@
                         background-color: #9aa4af;
                         border-radius: 5%/ 8%;
                         width: 100%;
-                        margin: 2%;
+                        margin-left: 2%;
+                        padding-top:2%;
                     }
 
                         .main-container .score-container .scores .score .score-inc {
@@ -683,9 +686,12 @@
             methods: {
                 loadBestScore: function () {
                     try {
-                        var bs = document.cookie
-                        if (bs)
-                            this.bestScore = bs ? JSON.parse(bs) : 0
+                        var c = document.cookie
+                        if (c) {
+                            var bs = JSON.parse(c)
+                            if (bs.length)
+                                this.bestScore = bs
+                        }
                     }
                     catch (e) {
                     }
