@@ -63,6 +63,7 @@
 
                         .main-container .score-container .scores .score .label {
                             color: honeydew;
+                            font-size:1rem;
                         }
 
 
@@ -275,7 +276,7 @@
                     </div>
                 </div>
                 <game-2048 ref="game" :size="size"
-                           :listen-own-events-only="false"
+                           :listen-own-key-events-only="false"
                            :tab-index="1"
                            :board-size-px="boardSizePx"
                            :started="gameStarted"
@@ -376,6 +377,43 @@
                 }
             }
 
+            function createSwipeListener(onSwipe) {
+
+                var sens = 10
+                var st
+
+                function onStart(e) {
+                    st = e.touches[0]
+                    e.preventDefault()
+                }
+
+                function onEnd(e) {
+                    var et = e.changedTouches[0]
+                    var x = st.clientX - et.clientX
+                    var y = st.clientY - et.clientY
+                    var mx = Math.abs(x)
+                    var my = Math.abs(y)
+                    if (mx < sens && my < sens)
+                        return
+
+                    var d = mx > my
+                        ? x > 0 ? 'left' : 'right'
+                        : y > 0 ? 'up' : 'down'
+                    onSwipe(d)
+                }
+
+                return {
+                    attach: function (el) {
+                        el.addEventListener('touchstart', onStart, false)
+                        el.addEventListener('touchend', onEnd, false)
+                    },
+                    detach: function (el) {
+                        el.removeEventListener('touchstart', onStart)
+                        el.removeEventListener('touchend', onEnd)
+                    }
+                }
+            }
+
             var keyMap = {}
             keyMap[37] = 'left'
             keyMap[38] = 'up'
@@ -392,7 +430,7 @@
                 template: '#game2048',
                 props: {
                     size: { type: Number },
-                    listenOwnEventsOnly: { type: Boolean, default: false },
+                    listenOwnKeyEventsOnly: { type: Boolean, default: false },
                     tabIndex: { type: Number, default: 1 },
                     boardSizePx: { type: Number, default: 0 },
                     animationTimeMs: { type: Number, default: 150 },
@@ -460,13 +498,14 @@
                             var chips = game.turn()
                             this.addChips(chips)
                         }
-                        this.runKeyboardControl(game)
+                        var doGameMove = this.createGameMove(game)
+                        this.runKeyboardControl(doGameMove)
+                        this.runTouchControl(doGameMove)
                         this.$emit('started', this)
                     },
 
-                    runKeyboardControl: function (game) {
-                        var listenKeysOn = this.listenOwnEventsOnly ? this.$el : document
-                        var doGameMove = this.createGameMove(game)
+                    runKeyboardControl: function (doGameMove) {
+                        var listenKeysOn = this.listenOwnKeyEventsOnly ? this.$el : document
                         var h = function (e) {
                             var m = keyMap[e.keyCode]
                             if (m == null)
@@ -477,6 +516,17 @@
                         listenKeysOn.addEventListener('keydown', h)
                         this.$once('ended', function () {
                             listenKeysOn.removeEventListener('keydown', h)
+                        })
+                    },
+
+                    runTouchControl: function (doGameMove) {
+                        var sw = createSwipeListener(function (m) {
+                            doGameMove(m)
+                        })
+                        var el = this.$el
+                        sw.attach(el)
+                        this.$once('ended', function () {
+                            sw.detach(el)
                         })
                     },
 
