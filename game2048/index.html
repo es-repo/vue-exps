@@ -371,7 +371,9 @@
                     'chip.value': function () {
                         var el = this.$el
                         if (el) {
-                            el.style.animation = 'chip-value-changed ' + this.animationTimeMs + 'ms'
+                            var d = this.animationTimeMs + 'ms'
+                            el.style.animation = 'chip-value-changed ' + d
+                            el.style.transition = 'background-color ' + d
                         }
                     }
                 },
