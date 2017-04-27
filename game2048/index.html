@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048 Game</title>
     <script src="../scripts/vue.js"></script>
     <script src="../scripts/tweenlite.min.js"></script>
@@ -41,15 +40,14 @@
                     text-align: center;
                     color: white;
                     background-color: #35495e;
-                    border-radius: 5%/ 9%;
-                    box-shadow: 0 9px 9px black;
+                    border-radius: 5% / 9%;
                     width:38%;
                 }
 
                 .main-container .score-container .game-aim-reached {
-                    animation:  pulse 0.5s 4;
                     text-shadow: 0 0 20px;
-                    transition: text-shadow 2s;
+                    animation: pulse 1s 3;
+                    transition: text-shadow 3s;
                 }
 
                 @keyframes pulse{
@@ -116,7 +114,6 @@
                     overflow: hidden;
                     cursor: pointer;
                     animation: appearing 0.5s;
-                    font-size: 18px;
                 }
 
                 .main-container .game-controls .size-control {
@@ -271,7 +268,7 @@
     <div id="app" style="display:none">
         <div class="main-container appearing" :style="mainContainerStyle">
             <div class="score-container" :style="scoreContainerStyle">
-                <div class="game-aim" v-bind:class="{'game-aim-reached':gameAimReached}">
+                <div class="game-aim" v-bind:class="{'game-aim-reached':gameAimReached}" :style="gameAimStyle">
                     {{gameAim}}
                 </div>
                 <div class="scores">
@@ -295,8 +292,8 @@
                         <label :for="'size-radio'+s">{{s}}</label>
                     </template>&nbsp;
                 </div>
-                <button v-if="!gameStarted" @click="startGame()" class="button" key="start">New Game</button>
-                <button v-else @click="gameStarted=false" class="button" key="end">End</button>
+                <button v-if="!gameStarted" @click="startGame()" class="button" :style="buttonStyle" key="start">New Game</button>
+                <button v-else @click="gameStarted=false" class="button" :style="buttonStyle" key="end">End</button>
             </div>
             <div class="game-container" :style="gameContainerStyle">
                 <div v-if="gameEnded">
@@ -715,6 +712,9 @@
                 }
             },
             created: function () {
+                if (window.innerWidth < this.boardSizePx * 1.04) {
+                    this.boardSizePx = window.innerWidth * 0.96
+                }
                 this.loadBestScore()
             },
             mounted: function () {
@@ -722,7 +722,7 @@
             },
             computed: {
                 gameOverStyle: function () {
-                    return { fontSize: this.boardSizePx / 5 + 'px' }
+                    return { fontSize: this.boardSizePx / 6 + 'px' }
                 },
                 gameContainerStyle: function () {
                     return {
@@ -737,12 +737,24 @@
                 },
                 gameControlsStyle: function () {
                     return {
-                        height: (this.boardSizePx * 0.15) + 'px'
+                        height: (this.boardSizePx * 0.2) + 'px'
                     }
                 },
                 scoreContainerStyle: function () {
                     return {
                         height: (this.boardSizePx * 0.20) + 'px'
+                    }
+                },
+                gameAimStyle: function () {
+                    var bsh = (this.boardSizePx / 50) + 'px '
+                    return {
+                        boxShadow: '0 ' + bsh + bsh + 'black',
+                        fontSize: this.boardSizePx / 110 + 'em'
+                    }
+                },
+                buttonStyle: function () {
+                    return {
+                        fontSize: this.boardSizePx / 450 + 'em'
                     }
                 }
             },
