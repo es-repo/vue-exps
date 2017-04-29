@@ -265,7 +265,7 @@
     </style>
 </head>
 <body>
-    <div id="app" style="display:none">
+    <div id="app" style="visibility:hidden">
         <div class="main-container appearing" :style="mainContainerStyle">
             <div class="score-container" :style="scoreContainerStyle">
                 <div class="game-aim" v-bind:class="{'game-aim-reached':gameAimReached}" :style="gameAimStyle">
@@ -689,7 +689,7 @@
                 }
             })
         })()
-
+        var defBoardSizePx = 450
         var app = new Vue({
             el: '#app',
             data: function () {
@@ -699,7 +699,7 @@
                     bestScore[sizes[i]] = 0
 
                 return {
-                    boardSizePx: 450,
+                    boardSizePx: defBoardSizePx,
                     size: 4,
                     sizes: sizes,
                     gameStarted: false,
@@ -712,13 +712,14 @@
                 }
             },
             created: function () {
-                if (window.innerWidth < this.boardSizePx * 1.04) {
-                    this.boardSizePx = window.innerWidth * 0.96
-                }
                 this.loadBestScore()
             },
             mounted: function () {
-                this.$el.style.display = ''
+                var self = this
+                requestAnimationFrame(function () {
+                    self.fitBoardSizePx()
+                    self.$el.style.visibility = 'visible'
+                })
             },
             computed: {
                 gameOverStyle: function () {
@@ -769,6 +770,14 @@
                 }
             },
             methods: {
+                fitBoardSizePx: function () {
+                    if (window.innerWidth < defBoardSizePx * 1.04) {
+                        this.boardSizePx = window.innerWidth * 0.96
+                    }
+                    else {
+                        this.boardSizePx = defBoardSizePx
+                    }
+                },
                 loadBestScore: function () {
                     try {
                         var c = document.cookie
