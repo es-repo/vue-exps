@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.a1.shiftabit" version="1.0.0" 
+<widget id="com.a1.shiftabit" version="1.0.0"
 				xmlns="http://www.w3.org/ns/widgets"
 				xmlns:gap="http://phonegap.com/ns/1.0"
 				xmlns:android = "http://schemas.android.com/apk/res/android">
@@ -15,7 +15,7 @@
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
 	</platform>
 	<config-file platform="android" parent="/manifest/application" mode="merge">
-			<activity android:theme="@android:style/Theme.DeviceDefault.NoActionBar"></activity>
+		<activity android:theme="@android:style/Theme.DeviceDefault.NoActionBar"></activity>
 	</config-file>
 	<preference name="android-minSdkVersion" value="19" />
 	<preference name="BackgroundColor" value="0xfff0fff0"/>
