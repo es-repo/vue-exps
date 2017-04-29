@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.a1.shiftabit" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>Shift a Bit 1.2</name>
+    <content src="game2048/index.html" />
+    <access origin="*" />
+  <preference name="EnableViewportScale" value="true"/>
+  <platform name="android">
+    <icon src="game2048/assets/icons/ldpi.png" qualifier="ldpi" />
+    <icon src="game2048/assets/icons/mdpi.png" qualifier="mdpi" />
+    <icon src="game2048/assets/icons/hdpi.png" qualifier="hdpi" />
+    <icon src="game2048/assets/icons/xhdpi.png" qualifier="xhdpi" />
+    <icon src="game2048/assets/icons/xxhdpi.png" qualifier="xxhdpi" />
+    <icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
+  </platform>
+</widget>
