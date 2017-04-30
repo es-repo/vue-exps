@@ -4,6 +4,8 @@
     <content src="game2048/index.html" />
     <access origin="*" />
   <preference name="EnableViewportScale" value="true"/>
+  <preference name="BackgroundColor" value="ff2c3e50"/>
+  <preference name="FullScreen" value="true"/>
   <platform name="android">
     <icon src="game2048/assets/icons/ldpi.png" qualifier="ldpi" />
     <icon src="game2048/assets/icons/mdpi.png" qualifier="mdpi" />
