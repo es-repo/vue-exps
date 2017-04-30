@@ -12,7 +12,15 @@
 		<icon src="game2048/assets/icons/xhdpi.png" qualifier="xhdpi" />
 		<icon src="game2048/assets/icons/xxhdpi.png" qualifier="xxhdpi" />
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
-		<application android:theme="@android:style/Theme.NoTitleBar" >
-		</application>
 	</platform>
+	<gap:config-file platform="android" parent="/manifest">
+		<supports-screens
+		android:xlargeScreens="false"
+		android:largeScreens="false"
+		android:smallScreens="false" />
+		<application android:theme="@android:style/Theme.NoTitleBar" >
+			<activity android:theme="@android:style/Theme.NoTitleBar.Fullscreen" ></activity>
+		</application>
+	</gap:config-file>
+
 </widget>
