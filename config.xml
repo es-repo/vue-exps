@@ -1,11 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.a1.shiftabit" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Shift a Bit 1.2</name>
+    <name>Shift a Bit</name>
     <content src="game2048/index.html" />
     <access origin="*" />
   <preference name="EnableViewportScale" value="true"/>
-  <preference name="BackgroundColor" value="ff2c3e50"/>
-  <preference name="FullScreen" value="true"/>
+  <preference name="BackgroundColor" value="002c3e50"/>
   <platform name="android">
     <icon src="game2048/assets/icons/ldpi.png" qualifier="ldpi" />
     <icon src="game2048/assets/icons/mdpi.png" qualifier="mdpi" />
