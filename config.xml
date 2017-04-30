@@ -12,9 +12,7 @@
 		<icon src="game2048/assets/icons/xhdpi.png" qualifier="xhdpi" />
 		<icon src="game2048/assets/icons/xxhdpi.png" qualifier="xxhdpi" />
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
-	</platform>
-	<gap:config-file platform="android" parent="/manifest">
 		<application android:theme="@android:style/Theme.NoTitleBar" >
 		</application>
-	</gap:config-file>
+	</platform>
 </widget>
