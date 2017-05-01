@@ -806,7 +806,9 @@
                 var self = this
                 requestAnimationFrame(function () {
                     self.fitBoardSizePx()
-                    self.$el.style.visibility = 'visible'
+                    requestAnimationFrame(function () {
+                        self.$el.style.visibility = 'visible'
+                    })
                 })
             },
             computed: {
