@@ -3,8 +3,6 @@
 	<name>Shift a Bit</name>
 	<content src="game2048/index.html" />
 	<access origin="*" />
-	<preference name="EnableViewportScale" value="true"/>
-	<preference name="BackgroundColor" value="002c3e50"/>
 	<platform name="android">
 		<icon src="game2048/assets/icons/ldpi.png" qualifier="ldpi" />
 		<icon src="game2048/assets/icons/mdpi.png" qualifier="mdpi" />
@@ -14,12 +12,3 @@
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
 	</platform>
 </widget>
-<gap:config-file platform="android" parent="/manifest">
-	<supports-screens
-	android:xlargeScreens="false"
-	android:largeScreens="false"
-	android:smallScreens="false" />
-	<application android:theme="@android:style/Theme.NoTitleBar" >
-		<activity android:theme="@android:style/Theme.NoTitleBar.Fullscreen" ></activity>
-	</application>
-</gap:config-file>
