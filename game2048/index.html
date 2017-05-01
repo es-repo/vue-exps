@@ -26,7 +26,12 @@
             display: flex;
             flex-direction: column;
             margin: 0 auto;
-            padding:2%;
+            padding: 2%;
+            /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
         }
 
             .main-container .score-container {
