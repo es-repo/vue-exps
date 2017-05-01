@@ -11,4 +11,5 @@
 		<icon src="game2048/assets/icons/xxhdpi.png" qualifier="xxhdpi" />
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
 	</platform>
+	<preference name="android-minSdkVersion" value="19" />
 </widget>
