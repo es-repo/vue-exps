@@ -236,7 +236,11 @@
                     background-color: honeydew;
                     z-index: 1;
                     border-radius: 7%;
-                    
+                    /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
+                    transform: translateZ(0);
+                    backface-visibility: hidden;
+                    -webkit-transform: translateZ(0);
+                    -webkit-backface-visibility: hidden;
                 }
 
         @keyframes chip-value-changed {
