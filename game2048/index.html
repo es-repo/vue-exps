@@ -8,13 +8,12 @@
     <script src="../scripts/tweenlite.min.js"></script>
     <script src="game2048.js"></script>
     <style>
-
         body, html {
             font-family: 'Source Sans Pro', Arial, sans-serif;
             color: #2c3e50;
             font-size: 18px;
-            margin:0;
-            background-color:honeydew;
+            margin: 0;
+            background-color: honeydew;
         }
 
         .half-white {
@@ -26,7 +25,12 @@
             display: flex;
             flex-direction: column;
             margin: 0 auto;
-            padding:2%;
+            padding: 2%;
+            /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
         }
 
             .main-container .score-container {
@@ -42,127 +46,148 @@
                     color: white;
                     background-color: #35495e;
                     border-radius: 5% / 9%;
-                    width:38%;
+                    width: 38%;
                 }
 
                 .main-container .score-container .game-aim-reached {
                     text-shadow: 0 0 20px;
                     animation: pulse 1s 3;
+                    -webkit-animation: pulse 1s 3;
                     transition: text-shadow 3s;
+                    -webkit-transition: -webkit-text-shadow 3s;
                 }
 
-                @keyframes pulse{
-                    0%{
-                        transform: scale(1)
-                    }
-                    50%{
-                        transform: scale(1.1)
-                    }
-                    100% {
-                        transform: scale(1)
-                    }
-                }
-
-                .main-container .score-container .scores {
-                    font-weight: bold;
-                    display: flex;
-                    justify-content: space-between;
-                    width: 50%;
-                }
-
-                    .main-container .score-container .scores .score {
-                        position: relative;
-                        text-align: center;
-                        color: white;
-                        background-color: #9aa4af;
-                        border-radius: 5%/ 8%;
-                        width: 50%;
-                        padding-top:2%;
-                    }
-
-                        .main-container .score-container .scores .score .score-inc {
-                            position: absolute;
-                            left: 0;
-                            color: #2c3e50;
-                            width: 100%;
-                            animation: up-disappear 1.5s;
-                        }
-
-                        .main-container .score-container .scores .score .label {
-                            color: white;
-                            font-size:1rem;
-                        }
-
-
-            .main-container .game-controls {
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                width: 100%;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
             }
 
-                .main-container .game-controls .button {
-                    background-color: #35495e;
-                    border: none;
-                    border-radius: 5% / 9%;
-                    width: 25%;
-                    height: 75%;
-                    color: white;
-                    outline: none;
-                    animation: appearing;
-                    font-weight: bold;
-                    overflow: hidden;
-                    cursor: pointer;
-                    animation: appearing 0.5s;
-                }
+            50% {
+                transform: scale(1.1);
+            }
 
-                .main-container .game-controls .size-control {
-                    width: 75%;
-                    font-weight: bold;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    animation: appearing 0.5s;
-                }
+            100% {
+                transform: scale(1);
+            }
+        }
 
-                    .main-container .game-controls .size-control input[type=radio]:not(checked) {
-                        position: absolute;
-                        opacity: 0;
-                    }
+        @-webkit-keyframes pulse {
+            0% {
+                -webkit-transform: scale(1)
+            }
 
-                    .main-container .game-controls .size-control input[type=radio] + label {
-                        cursor: pointer;
-                        border: 5px solid #35495e;
-                        height: 30px;
-                        width: 30px;
-                        display: inline-flex;
-                        border-radius: 50%;
-                        justify-content: center;
-                        align-items: center;
-                        position: relative;
-                        vertical-align: middle;
-                        font-weight: bold;
-                        transition: background-color 0.3s, color 0.3s;
-                    }
+            50% {
+                -webkit-transform: scale(1.1)
+            }
 
-                    .main-container .game-controls .size-control input[type=radio]:checked + label {
-                        background: #41b883;
-                        color: white;
-                    }
+            100% {
+                -webkit-transform: scale(1)
+            }
+        }
 
-            .main-container .game-container {
+        .main-container .score-container .scores {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            width: 50%;
+        }
+
+            .main-container .score-container .scores .score {
                 position: relative;
+                text-align: center;
+                color: white;
+                background-color: #9aa4af;
+                border-radius: 5%/ 8%;
+                width: 50%;
+                padding-top: 2%;
             }
 
-                .main-container .game-container .overlay {
-                    width: 100%;
-                    height: 100%;
+                .main-container .score-container .scores .score .score-inc {
                     position: absolute;
-                    z-index: 2;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    left: 0;
+                    color: #2c3e50;
+                    width: 100%;
+                    animation: up-disappear 1.5s;
+                    -webkit-animation: up-disappear 1.5s;
                 }
+
+                .main-container .score-container .scores .score .label {
+                    color: white;
+                    font-size: 1rem;
+                }
+
+
+        .main-container .game-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 100%;
+        }
+
+            .main-container .game-controls .button {
+                background-color: #35495e;
+                border: none;
+                border-radius: 5% / 9%;
+                width: 25%;
+                height: 75%;
+                color: white;
+                outline: none;
+                font-weight: bold;
+                overflow: hidden;
+                cursor: pointer;
+                animation: appearing 0.5s;
+                -webkit-animation: appearing 0.5s;
+            }
+
+            .main-container .game-controls .size-control {
+                width: 75%;
+                font-weight: bold;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                animation: appearing 0.5s;
+                -webkit-animation: appearing 0.5s;
+            }
+
+                .main-container .game-controls .size-control input[type=radio]:not(checked) {
+                    position: absolute;
+                    opacity: 0;
+                }
+
+                .main-container .game-controls .size-control input[type=radio] + label {
+                    cursor: pointer;
+                    border: 5px solid #35495e;
+                    height: 30px;
+                    width: 30px;
+                    display: inline-flex;
+                    border-radius: 50%;
+                    justify-content: center;
+                    align-items: center;
+                    position: relative;
+                    vertical-align: middle;
+                    font-weight: bold;
+                    transition: background-color 0.3s, color 0.3s;
+                    -webkit-transition: -webkit-background-color 0.3s, -webkit-color 0.3s;
+                }
+
+                .main-container .game-controls .size-control input[type=radio]:checked + label {
+                    background: #41b883;
+                    color: white;
+                }
+
+        .main-container .game-container {
+            position: relative;
+        }
+
+            .main-container .game-container .overlay {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                z-index: 2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
         .game-over {
             font-weight: bold;
@@ -171,13 +196,25 @@
 
         .appearing {
             animation: appearing 1s;
+            -webkit-animation: appearing 1s;
         }
 
         .appearing07 {
             animation: appearing07 1s;
+            -webkit-animation: appearing07 1s;
         }
 
         @keyframes appearing {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @-webkit-keyframes appearing {
             0% {
                 opacity: 0;
             }
@@ -198,7 +235,28 @@
             }
         }
 
+        @-webkit-keyframes up-disappear {
+            0% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 0;
+                -webkit-transform: translateY(-40px);
+            }
+        }
+
         @keyframes appearing07 {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0.7;
+            }
+        }
+
+        @-webkit-keyframes appearing07 {
             0% {
                 opacity: 0;
             }
@@ -236,7 +294,11 @@
                     background-color: honeydew;
                     z-index: 1;
                     border-radius: 7%;
-                    
+                    /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
+                    transform: translateZ(0);
+                    backface-visibility: hidden;
+                    -webkit-transform: translateZ(0);
+                    -webkit-backface-visibility: hidden;
                 }
 
         @keyframes chip-value-changed {
@@ -253,6 +315,20 @@
             }
         }
 
+        @-webkit-keyframes chip-value-changed {
+            0% {
+                -webkit-transform: scale(1);
+            }
+
+            50% {
+                -webkit-transform: scale(1.2);
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+            }
+        }
+
         @keyframes chip-appear {
             0% {
                 transform: scale(0);
@@ -260,6 +336,16 @@
 
             100% {
                 transform: scale(1);
+            }
+        }
+
+        @-webkit-keyframes chip-appear {
+            0% {
+                -webkit-transform: scale(0);
+            }
+
+            100% {
+                -webkit-transform: scale(1);
             }
         }
     </style>
@@ -395,8 +481,9 @@
                         var el = this.$el
                         if (el) {
                             var d = this.animationTimeMs + 'ms'
-                            el.style.animation = 'chip-value-changed ' + d
+                            el.style['-webkit-animation'] = el.style.animation = 'chip-value-changed ' + d
                             el.style.transition = 'background-color ' + d
+                            el.style['-webkit-transition'] = '-web-kit-background-color ' + d
                         }
                     }
                 },
@@ -405,16 +492,17 @@
                         var self = this
                         if (this.chip.prevRelPos) {
                             var p = this.chip.prevRelPos
-                            el.style.transform = 'translate(' + p.left + 'px,' + p.top + 'px)'
+                            el.style['-webkit-transform'] = el.style.transform = 'translate(' + p.left + 'px,' + p.top + 'px)'
                             requestAnimationFrame(function () {
                                 requestAnimationFrame(function () {
                                     el.style.transition = 'transform ' + self.animationTimeMs + 'ms'
-                                    el.style.transform = '';
+                                    el.style['-webkit-transition'] = '-webkit-transform ' + self.animationTimeMs + 'ms'
+                                    el.style['-webkit-transform'] = el.style.transform = '';
                                 })
                             })
                         }
                         else {
-                            el.style.animation = 'chip-appear ' + this.animationTimeMs + 'ms'
+                            el.style['-webkit-animation'] = el.style.animation = 'chip-appear ' + this.animationTimeMs + 'ms'
                         }
                     }
                 }
@@ -836,7 +924,7 @@
                     this.gameAim = aim
                 },
                 onGameAimReached: function () {
-                    this.gameAimReached = true 
+                    this.gameAimReached = true
                 }
             }
         })
