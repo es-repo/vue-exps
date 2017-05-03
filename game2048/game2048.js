@@ -21,19 +21,20 @@
 		return tWasEmpty ? 0 : v
 	}
 
-	function findRandomEmptyPos() {
-		var r = Math.floor(Math.random() * size2)
-		var c = {}
-		for (var i = size2; i > 0; i--) {
-			c.y = Math.floor(r / size)
-			c.x = r % size
-			if (cellIsEmpty(c))
-				return c
-			r++
-			if (r == size2)
-				r = 0
-		}
-		return null
+	function findRandomEmptyCell() {
+		var empty = []
+		for (var y = 0; y < size; y++)
+			for (var x = 0; x < size; x++) {
+				var c = { x: x, y: y }
+				if (cellIsEmpty(c))
+					empty.push(c)
+			}
+
+		if (empty.length == 0)
+			return null
+
+		var r = Math.floor(Math.random() * empty.length)
+		return empty[r]
 	}
 
 	function rot0(c, x, y) {
@@ -104,7 +105,7 @@
 		score: function () { return score },
 		turn: function () {
 			var chips = []
-			var p = findRandomEmptyPos()
+			var p = findRandomEmptyCell()
 			if (p != null) {
 				var rnd = Math.random()
 				var v = rnd > 0.8 ? 4 : 2
