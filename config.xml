@@ -19,4 +19,5 @@
 	</config-file>
 	<preference name="android-minSdkVersion" value="19" />
 	<preference name="BackgroundColor" value="0xfff0fff0"/>
+	<plugin name="phonegap-admob" source="npm"/>
 </widget>
