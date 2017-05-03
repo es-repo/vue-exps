@@ -7,6 +7,7 @@
     <script src="../scripts/vue.js"></script>
     <script src="../scripts/tweenlite.min.js"></script>
     <script src="game2048.js"></script>
+    <script type="text/javascript" src="../cordova.js"></script>
     <style>
         body, html {
             font-family: 'Source Sans Pro', Arial, sans-serif;
@@ -929,7 +930,47 @@
                     this.gameAimReached = true
                 }
             }
-        })
+        });
+
+        (function () {
+            function runAds() {
+                if (!admob)
+                    return
+
+                admob.setOptions({
+                    publisherId: "ca-app-pub-8413752460507538/1438559208",
+                    //interstitialAdId: "ca-app-pub-8413752460507538/2915292409",
+                    //tappxIdiOS: "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
+                    tappxIdAndroid: "/120940746/Pub-17614-Android-9529",
+                    tappxShare: 0.5,
+                    overlap: true,
+                    isTesting:true
+                });
+
+                document.addEventListener(admob.events.onAdLoaded, onAdLoaded);
+
+                setTimeout(function () {
+                    admob.createBannerView();
+                    //admob.requestInterstitialAd();
+                }, 2000)
+            }
+
+            function onAdLoaded(e) {
+                //if (e.adType === admob.AD_TYPE.INTERSTITIAL) {
+                //    admob.showInterstitialAd();
+                //    showNextInterstitial = setTimeout(function () {
+                //        admob.requestInterstitialAd();
+                //    }, 2 * 60 * 1000); // 2 minutes
+                //}
+            }
+
+            function onDeviceReady() {
+                document.removeEventListener('deviceready', onDeviceReady, false);
+                runAds()
+            }
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+        })()
     </script>
 </body>
 </html>
