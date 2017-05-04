@@ -1075,6 +1075,10 @@
             },
             created: function () {
                 this.loadState()
+                if (this.doShowAds) {
+                    var self = this
+                    setTimeout(function () { self.runAds() }, 2000)
+                }
             },
             mounted: function () {
                 var self = this
@@ -1142,6 +1146,8 @@
                     for (var i in this.awards)
                         if (!this.awards[i].obtained)
                             return false
+                },
+                doShowAds: function () {
                     return true
                 }
             },
@@ -1253,6 +1259,42 @@
                             return c.$el
                     }
                     return null
+                },
+                runAds: function () {
+
+                    function onAdLoaded() {
+                        //if (e.adType === admob.AD_TYPE.INTERSTITIAL) {
+                        //    admob.showInterstitialAd();
+                        //    showNextInterstitial = setTimeout(function () {
+                        //        admob.requestInterstitialAd();
+                        //    }, 2 * 60 * 1000); // 2 minutes
+                        //}
+                    }
+
+                    function run() {
+                        if (!admob)
+                            return
+                        admob.setOptions({
+                            publisherId: "ca-app-pub-8413752460507538/1438559208",
+                            //interstitialAdId: "ca-app-pub-8413752460507538/2915292409",
+                            //tappxIdiOS: "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
+                            tappxIdAndroid: "/120940746/Pub-17614-Android-9529",
+                            tappxShare: 0.5,
+                            overlap: true,
+                            isTesting: true
+                        });
+                        document.addEventListener(admob.events.onAdLoaded, onAdLoaded);
+
+                        admob.createBannerView();
+                        //admob.requestInterstitialAd();
+                    }
+
+                    function onDeviceReady() {
+                        document.removeEventListener('deviceready', onDeviceReady, false);
+                        run()
+                    }
+
+                    document.addEventListener("deviceready", onDeviceReady, false);
                 }
             }
         })
