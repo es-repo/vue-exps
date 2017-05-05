@@ -193,7 +193,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            margin-top:2%;
+            margin-top: 2%;
         }
 
             .main-container .game-awards-container .award {
@@ -204,8 +204,8 @@
 
                 .main-container .game-awards-container .award .like {
                     width: 25%;
-                    top:2px;
-                    position:relative;
+                    top: 2px;
+                    position: relative;
                 }
 
             .main-container .game-awards-container .award-not-obtained {
@@ -221,6 +221,13 @@
                 box-shadow: 0 2px 4px 0 black;
                 fill: white;
                 filter: drop-shadow( -1px -1px 0 orange );
+            }
+
+            .main-container .collect-all-awards {
+                text-align: center;
+                animation: collect-all-awards 10s infinite;
+                width:100%;
+                opacity:0;
             }
 
         .game-over {
@@ -382,6 +389,82 @@
                 -webkit-transform: scale(1);
             }
         }
+
+        @keyframes collect-all-awards{
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            60% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            65%{
+                opacity: 1;
+                transform: translateY(0);
+            }
+            78% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            79% {
+                transform: translateX(5px);
+                opacity: 1;
+            }
+            80% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+            81% {
+                transform: translateX(5px);
+                opacity: 1;
+            }
+            82% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+            83% {
+                transform: translateX(5px);
+                opacity: 1;
+            }
+            84% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+            85% {
+                transform: translateX(5px);
+                opacity: 1;
+            }
+
+            86% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+            87% {
+                transform: translateX(5px);
+                opacity: 1;
+            }
+
+            88% {
+                transform: translateX(-5px);
+                opacity: 1;
+            }
+            89% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            99% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(20px);
+                opacity:0
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -437,6 +520,7 @@
             <div class="game-awards-container" :style="gameAwardsContainerStyle">
                 <game2048-award ref="awards" v-for="a in awards" key="a.aim" :award="a" :style="gameAwardStyle"></game2048-award>
             </div>
+            <div class="collect-all-awards" v-if="!allAwardsObtained">Collect all awards!</div>
         </div>
     </div>
 
@@ -458,9 +542,9 @@
 
     <template id="game2048-award" hidden>
         <div class="award" :style="style" v-bind:class="{'award-obtained':award.obtained, 'award-not-obtained':!award.obtained}">
-        <svg class="like" viewBox="0 0 456.814 456.814">
-<g>
-    <path d="M441.11,252.677c10.468-11.99,15.704-26.169,15.704-42.54c0-14.846-5.432-27.692-16.259-38.547
+            <svg class="like" viewBox="0 0 456.814 456.814">
+                <g>
+                    <path d="M441.11,252.677c10.468-11.99,15.704-26.169,15.704-42.54c0-14.846-5.432-27.692-16.259-38.547
 			c-10.849-10.854-23.695-16.278-38.541-16.278h-79.082c0.76-2.664,1.522-4.948,2.282-6.851c0.753-1.903,1.811-3.999,3.138-6.283
 			c1.328-2.285,2.283-3.999,2.852-5.139c3.425-6.468,6.047-11.801,7.857-15.985c1.807-4.192,3.606-9.9,5.42-17.133
 			c1.811-7.229,2.711-14.465,2.711-21.698c0-4.566-0.055-8.281-0.145-11.134c-0.089-2.855-0.574-7.139-1.423-12.85
@@ -475,14 +559,16 @@
 			c25.321-0.38,44.061-7.806,56.247-22.268c11.036-13.135,15.697-30.361,13.99-51.679c7.422-7.042,12.565-15.984,15.416-26.836
 			c3.231-11.604,3.231-22.74,0-33.397c8.754-11.611,12.847-24.649,12.272-39.115C445.395,268.286,443.971,261.055,441.11,252.677z" />
 
-    <path d="M100.5,191.864H18.276c-4.952,0-9.235,1.809-12.851,5.426C1.809,200.905,0,205.188,0,210.137v182.732
+                    <path d="M100.5,191.864H18.276c-4.952,0-9.235,1.809-12.851,5.426C1.809,200.905,0,205.188,0,210.137v182.732
 			c0,4.942,1.809,9.227,5.426,12.847c3.619,3.611,7.902,5.421,12.851,5.421H100.5c4.948,0,9.229-1.81,12.847-5.421
 			c3.616-3.62,5.424-7.904,5.424-12.847V210.137c0-4.949-1.809-9.231-5.424-12.847C109.73,193.672,105.449,191.864,100.5,191.864z
 			 M67.665,369.308c-3.616,3.521-7.898,5.281-12.847,5.281c-5.14,0-9.471-1.76-12.99-5.281c-3.521-3.521-5.281-7.85-5.281-12.99
 			c0-4.948,1.759-9.232,5.281-12.847c3.52-3.617,7.85-5.428,12.99-5.428c4.949,0,9.231,1.811,12.847,5.428
 			c3.617,3.614,5.426,7.898,5.426,12.847C73.091,361.458,71.286,365.786,67.665,369.308z" />
-</g></svg>
-        {{award.aim}}</div>
+                </g>
+            </svg>
+            {{award.aim}}
+        </div>
     </template>
     <script>
 
@@ -649,7 +735,7 @@
             keyMap[38] = 'up'
             keyMap[39] = 'right'
             keyMap[40] = 'down'
-            
+
             Vue.component('game2048', {
                 template: '#game2048',
                 props: {
@@ -952,6 +1038,12 @@
                         width: this.boardSizePx / 5 + 'px',
                         fontSize: this.boardSizePx / 350 + 'em'
                     }
+                },
+                allAwardsObtained: function () {
+                    for (var i in this.awards)
+                        if (!this.awards[i].obtained)
+                            return false
+                    return true
                 }
             },
             watch: {
@@ -1046,7 +1138,7 @@
                     var hs = p1.height / p2.height
                     var x = p1.left - p2.left + (p1.width / 4)
                     var y = p1.top - p2.top + (p1.height / 2)
-                    
+
                     awardEl.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + ws + ',' + hs + ')'
                     awardEl.style.transition = ''
                     awardEl.style.zIndex = 100
