@@ -1152,7 +1152,7 @@
                     return true
                 },
                 doShowAds: function () {
-                    return !this.allAwardsObtained
+                    return false//!this.allAwardsObtained
                 }
             },
             watch: {
@@ -1300,7 +1300,7 @@
                         run()
                     }
 
-                    document.addEventListener("deviceready", onDeviceReady, false);
+                    //document.addEventListener("deviceready", onDeviceReady, false);
                 },
                 showIntersitialAd: function () {
                     if (this.startCount > 1 && this.interstitialAdReady) {
