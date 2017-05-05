@@ -227,8 +227,6 @@
             text-align: center;
             width: 100%;
             opacity: 0;
-            animation: collect-all-awards 10s infinite;
-            -webkit-animation: collect-all-awards 10s infinite;
         }
 
         .game-over {
@@ -619,7 +617,7 @@
             <div class="game-awards-container" :style="gameAwardsContainerStyle">
                 <game2048-award ref="awards" v-for="a in awards" key="a.aim" :award="a" :style="gameAwardStyle"></game2048-award>
             </div>
-            <div class="collect-all-awards" v-if="!allAwardsObtained">Collect all awards!</div>
+            <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained">Collect all awards!</div>
         </div>
     </div>
 
@@ -1082,6 +1080,7 @@
                     self.fitBoardSizePx()
                     requestAnimationFrame(function () {
                         self.$el.style.visibility = 'visible'
+                        self.showCollectAllAwards()
                     })
                 })
             },
@@ -1189,6 +1188,7 @@
                 startGame: function () {
                     this.gameStarted = true
                     this.score = 0
+                    this.showCollectAllAwards()
                 },
                 onGameStarted: function () {
                     this.gameStarted = true
@@ -1253,6 +1253,13 @@
                             return c.$el
                     }
                     return null
+                },
+                showCollectAllAwards: function () {
+                    var s = this.$refs.collectAllAwards.style
+                    s['-webkit-animation'] = s.animation = ''
+                    requestAnimationFrame(function () {
+                        s['-webkit-animation'] = s.animation = 'collect-all-awards 5s'
+                    })
                 }
             }
         })
