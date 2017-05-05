@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.a1.shiftabit" version="1.0.0"
+<widget id="com.a1.shift-a-bit-2048-game" version="1.0.0" 
 				xmlns="http://www.w3.org/ns/widgets"
 				xmlns:gap="http://phonegap.com/ns/1.0"
-				xmlns:android = "http://schemas.android.com/apk/res/android">
+				xmlns:android="http://schemas.android.com/apk/res/android">
 	<name>Shift a Bit</name>
 	<content src="game2048/index.html" />
 	<access origin="*" />
