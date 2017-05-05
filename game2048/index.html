@@ -1069,11 +1069,17 @@
                     score: 0,
                     scoreInc: '',
                     bestScore: bestScore,
-                    awards: awards
+                    awards: awards,
+                    interstitialAdReady: false,
+                    startCount:0
                 }
             },
             created: function () {
                 this.loadState()
+                if (this.doShowAds) {
+                    var self = this
+                    setTimeout(function () { self.runAds() }, 1000)
+                }
             },
             mounted: function () {
                 var self = this
@@ -1143,6 +1149,9 @@
                         if (!this.awards[i].obtained)
                             return false
                     return true
+                },
+                doShowAds: function () {
+                    return false//!this.allAwardsObtained
                 }
             },
             watch: {
@@ -1187,6 +1196,9 @@
                     }
                 },
                 startGame: function () {
+                    this.startCount++
+                    if (this.doShowAds) 
+                        this.showIntersitialAd()
                     this.gameStarted = true
                     this.score = 0
                     this.showCollectAllAwards()
@@ -1261,49 +1273,57 @@
                     requestAnimationFrame(function () {
                         s['-webkit-animation'] = s.animation = 'collect-all-awards 5s'
                     })
+                },
+                runAds: function () {
+                    var self = this
+
+                    function onAdLoaded(e) {
+                        if (e.adType === admob.AD_TYPE.INTERSTITIAL) {
+                            self.interstitialAdReady = true
+                        }
+                    }
+
+                    function run() {
+                        if (!admob)
+                            return
+                        admob.setOptions({
+                            publisherId: "ca-app-pub-8413752460507538/1438559208",
+                            interstitialAdId: "ca-app-pub-8413752460507538/2915292409",
+                            //tappxIdiOS: "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
+                            tappxIdAndroid: "/120940746/Pub-17614-Android-9529",
+                            tappxShare: 0.5,
+                            overlap: true,
+                            autoShowInterstitial :false,
+                            isTesting: true
+                        });
+                        document.addEventListener(admob.events.onAdLoaded, onAdLoaded);
+
+                        admob.createBannerView();
+                        admob.requestInterstitialAd();
+                    }
+
+                    function onDeviceReady() {
+                        document.removeEventListener('deviceready', onDeviceReady, false);
+                        run()
+                    }
+
+                    //document.addEventListener("deviceready", onDeviceReady, false);
+                },
+                showIntersitialAd: function () {
+                    if (this.startCount > 1 && this.interstitialAdReady) {
+                        admob.showInterstitialAd()
+                        this.interstitialAdReady = false
+                        setTimeout(function () { admob.requestInterstitialAd() }, 30000)
+                    }
+                },
+                stopAds: function () {
+                    if (!admob) return
+
+                    admob.destroyBannerView();
+
                 }
             }
-        });
-
-        (function () {
-            function runAds() {
-                if (!admob)
-                    return
-
-                admob.setOptions({
-                    publisherId: "ca-app-pub-8413752460507538/1438559208",
-                    //interstitialAdId: "ca-app-pub-8413752460507538/2915292409",
-                    //tappxIdiOS: "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
-                    tappxIdAndroid: "/120940746/Pub-17614-Android-9529",
-                    tappxShare: 0.5,
-                    overlap: true,
-                    isTesting:true
-                });
-
-                document.addEventListener(admob.events.onAdLoaded, onAdLoaded);
-
-                setTimeout(function () {
-                    admob.createBannerView();
-                    //admob.requestInterstitialAd();
-                }, 2000)
-            }
-
-            function onAdLoaded(e) {
-                //if (e.adType === admob.AD_TYPE.INTERSTITIAL) {
-                //    admob.showInterstitialAd();
-                //    showNextInterstitial = setTimeout(function () {
-                //        admob.requestInterstitialAd();
-                //    }, 2 * 60 * 1000); // 2 minutes
-                //}
-            }
-
-            function onDeviceReady() {
-                document.removeEventListener('deviceready', onDeviceReady, false);
-                runAds()
-            }
-
-            document.addEventListener("deviceready", onDeviceReady, false);
-        })()
+        })
     </script>
 </body>
 </html>
