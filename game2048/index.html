@@ -30,6 +30,8 @@
             /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
             .main-container .score-container {
@@ -230,7 +232,7 @@
 
             .main-container .collect-all-awards span {
                 border: 1px solid #2c3e50;
-                border-radius: 7% / 50%;
+                border-radius: 5% / 50%;
                 padding: 0 3px 0 3px;
             }
 
@@ -342,6 +344,8 @@
                     /* Hack to improve transition performance on mobile devices. It enables GPU rendering. */
                     transform: translateZ(0);
                     -webkit-transform: translateZ(0);
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
                 }
 
         @keyframes chip-value-changed {
