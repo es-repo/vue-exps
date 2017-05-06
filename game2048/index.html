@@ -793,7 +793,7 @@
 
             function createSwipeListener(onSwipe) {
 
-                var sens = 10
+                var sens = 5
                 var st
 
                 function onStart(e) {
@@ -1271,7 +1271,7 @@
                     var s = this.$refs.collectAllAwards.style
                     s['-webkit-animation'] = s.animation = ''
                     requestAnimationFrame(function () {
-                        s['-webkit-animation'] = s.animation = 'collect-all-awards 5s'
+                        s['-webkit-animation'] = s.animation = 'collect-all-awards 10s'
                     })
                 },
                 runAds: function () {
