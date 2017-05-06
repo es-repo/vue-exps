@@ -227,12 +227,12 @@
         .main-container .collect-all-awards {
             text-align: center;
             opacity: 0;
-            margin-top: 3px;
+            margin-top: 4px;
         }
 
             .main-container .collect-all-awards span {
                 border: 1px solid #2c3e50;
-                border-radius: 5% / 50%;
+                border-radius: 7% / 50%;
                 padding: 0 3px 0 3px;
             }
 
@@ -622,7 +622,9 @@
                            @aim-reached="onGameAimReached"></game-2048>
             </div>
             <div class="game-awards-container" :style="gameAwardsContainerStyle">
-                <game2048-award ref="awards" v-for="a in awards" key="a.aim" :award="a" :style="gameAwardStyle"></game2048-award>
+                <game2048-award ref="awards" v-for="a in awards" key="a.aim" :award="a" 
+                                :style="gameAwardStyle"
+                                :like-style="gameAwardLikeStyle"></game2048-award>
             </div>
             <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained"><span>Collect all awards to remove ads!</span></div>
         </div>
@@ -646,7 +648,7 @@
 
     <template id="game2048-award" hidden>
         <div class="award" :style="style" v-bind:class="{'award-obtained':award.obtained, 'award-not-obtained':!award.obtained}">
-            <svg class="like" viewBox="0 0 456.814 456.814">
+            <svg class="like" viewBox="0 0 456.814 456.814" :style="likeStyle">
                 <g>
                     <path d="M441.11,252.677c10.468-11.99,15.704-26.169,15.704-42.54c0-14.846-5.432-27.692-16.259-38.547
 			c-10.849-10.854-23.695-16.278-38.541-16.278h-79.082c0.76-2.664,1.522-4.948,2.282-6.851c0.753-1.903,1.811-3.999,3.138-6.283
@@ -681,7 +683,8 @@
                 template: '#game2048-award',
                 props: {
                     award: { type: Object, required: true },
-                    style: { type: Object }
+                    style: { type: Object },
+                    likeStyle: { type: Object }
                 }
             })
         })();
@@ -1149,6 +1152,11 @@
                     return {
                         width: this.boardSizePx / 5 + 'px',
                         fontSize: this.boardSizePx / 350 + 'em'
+                    }
+                },
+                gameAwardLikeStyle: function () {
+                    return {
+                        height: this.boardSizePx / 21 + 'px'
                     }
                 },
                 allAwardsObtained: function () {
