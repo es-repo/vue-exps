@@ -221,7 +221,7 @@
                 background: linear-gradient(to top right, gold, yellow);
                 box-shadow: 0 2px 4px 0 black;
                 fill: white;
-                -webkit-filter: drop-shadow( -1px -1px 0 orange );
+                filter: drop-shadow( -1px -1px 0 orange );
             }
 
         .main-container .collect-all-awards {
@@ -1259,11 +1259,12 @@
                     var y = p1.top - p2.top + (p1.height / 2)
 
                     var s = awardEl.style
-                    s.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + ws + ',' + hs + ')'
+                    s['-webkit-transform'] = s.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + ws + ',' + hs + ')'
+                    s['-webkit-transition'] = s.transition = ''
                     s.zIndex = 100
                     requestAnimationFrame(function () {
-                        s.transition = 'all 2s'
-                        s.transform = ''
+                        s['-webkit-transition'] = s.transition = 'all 2s'
+                        s['-webkit-transform'] = s.transform = ''
                     })
                 },
                 getAwardEl: function (aim) {
