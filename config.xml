@@ -22,6 +22,5 @@
 	<preference name="android-minSdkVersion" value="19" />
 	<preference name="BackgroundColor" value="0xfff0fff0"/>
 	<preference name="Orientation" value="portrait" />
-	<preference name="Fullscreen" value="true" />
 	<plugin name="phonegap-admob" source="npm"/>
 </widget>
