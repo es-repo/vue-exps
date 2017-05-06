@@ -220,7 +220,7 @@
                 background: linear-gradient(to top right, gold, yellow);
                 box-shadow: 0 2px 4px 0 black;
                 fill: white;
-                filter: drop-shadow( -1px -1px 0 orange );
+                -webkit-filter: drop-shadow( -1px -1px 0 orange );
             }
 
         .main-container .collect-all-awards {
@@ -1240,12 +1240,10 @@
 
                     var s = awardEl.style
                     s.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + ws + ',' + hs + ')'
-                    s['-webkit-transform'] = '-webkit-translate(' + x + 'px,' + y + 'px) -webkit-scale(' + ws + ',' + hs + ')'
-                    s['-webkit-transition'] = s.transition = ''
                     s.zIndex = 100
                     requestAnimationFrame(function () {
-                        s['-webkit-transition'] =s.transition = 'all 2s'
-                        s['-webkit-transform'] = s.transform = ''
+                        s.transition = 'all 2s'
+                        s.transform = ''
                     })
                 },
                 getAwardEl: function (aim) {
