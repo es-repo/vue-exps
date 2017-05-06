@@ -14,10 +14,14 @@
 		<icon src="game2048/assets/icons/xxhdpi.png" qualifier="xxhdpi" />
 		<icon src="game2048/assets/icons/xxxhdpi.png" qualifier="xxxhdpi" />
 	</platform>
-	<config-file platform="android" parent="/manifest/application" mode="merge">
-		<activity android:theme="@android:style/Theme.DeviceDefault.NoActionBar"></activity>
+	<config-file platform="android" parent="/manifest" mode="merge">
+		<application android:hardwareAccelerated="true" >
+			<activity android:theme="@android:style/Theme.DeviceDefault.NoActionBar"></activity>
+		</application>
 	</config-file>
 	<preference name="android-minSdkVersion" value="19" />
 	<preference name="BackgroundColor" value="0xfff0fff0"/>
+	<preference name="Orientation" value="portrait" />
+	<preference name="Fullscreen" value="true" />
 	<plugin name="phonegap-admob" source="npm"/>
 </widget>
