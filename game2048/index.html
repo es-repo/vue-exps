@@ -226,9 +226,14 @@
 
         .main-container .collect-all-awards {
             text-align: center;
-            width: 100%;
             opacity: 0;
         }
+
+            .main-container .collect-all-awards span {
+                border: solid #2c3e50;
+                border-radius: 5% / 50%;
+                padding: 0 3px 0 3px;
+            }
 
         .game-over {
             font-weight: bold;
@@ -618,7 +623,7 @@
             <div class="game-awards-container" :style="gameAwardsContainerStyle">
                 <game2048-award ref="awards" v-for="a in awards" key="a.aim" :award="a" :style="gameAwardStyle"></game2048-award>
             </div>
-            <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained">Collect all awards!</div>
+            <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained"><span>Collect all awards!</span></div>
         </div>
     </div>
 
