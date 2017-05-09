@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>2048 Game</title>
     <script src="../scripts/vue.js"></script>
     <script src="../scripts/tweenlite.min.js"></script>
@@ -1081,7 +1081,9 @@
                     awards: awards,
                     startCount: 0,
                     interstitialAdReady: false,
-                    interstitialAdRequesting: false
+                    interstitialAdRequesting: false,
+                    mounted: false,
+                    deviceready: false,
                 }
             },
             created: function () {
@@ -1091,14 +1093,9 @@
                 }
             },
             mounted: function () {
-                var self = this
-                requestAnimationFrame(function () {
-                    self.fitBoardSizePx()
-                    requestAnimationFrame(function () {
-                        self.$el.style.visibility = 'visible'
-                        self.showCollectAllAwards()
-                    })
-                })
+                this.mounted = true
+                if (!window.cordova || this.deviceready)
+                    this.onMountedAndDeviceReady()
             },
             computed: {
                 gameOverStyle: function () {
@@ -1178,6 +1175,16 @@
                 }
             },
             methods: {
+                onMountedAndDeviceReady: function () {
+                    var self = this
+                    requestAnimationFrame(function () {
+                        self.fitBoardSizePx()
+                        requestAnimationFrame(function () {
+                            self.$el.style.visibility = 'visible'
+                            self.showCollectAllAwards()
+                        })
+                    })
+                },
                 fitBoardSizePx: function () {
                     if (window.innerWidth < defBoardSizePx * 1.04) {
                         this.boardSizePx = window.innerWidth * 0.96
@@ -1311,7 +1318,7 @@
                             interstitialAdId: "ca-app-pub-8413752460507538/2915292409",
                             //tappxIdiOS: "/XXXXXXXXX/Pub-XXXX-iOS-IIII",
                             tappxIdAndroid: "/120940746/Pub-17778-Android-6240",
-                            tappxShare: 0.5,
+                            tappxShare: 0.3,
                             overlap: true,
                             autoShowInterstitial: false,
                             isTesting: false
@@ -1323,6 +1330,15 @@
 
                     function onDeviceReady() {
                         document.removeEventListener('deviceready', onDeviceReady, false);
+
+                        if (window.MobileAccessibility) {
+                            window.MobileAccessibility.usePreferredTextZoom(false);
+                        }
+
+                        self.deviceready = true
+                        if (self.mounted)
+                            self.onMountedAndDeviceReady()
+                        
                         run()
                     }
 
