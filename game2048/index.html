@@ -626,7 +626,7 @@
                                 :style="gameAwardStyle"
                                 :like-style="gameAwardLikeStyle"></game2048-award>
             </div>
-            <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained"><span>Collect all awards to remove ads!</span></div>
+            <div ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained"><span>{{collectAwardsMessage}}</span></div>
         </div>
     </div>
 
@@ -1088,9 +1088,7 @@
             },
             created: function () {
                 this.loadState()
-                if (this.doShowAds) {
-                    setTimeout(this.runAds, 1000)
-                }
+                setTimeout(this.initDevice, 1000)
             },
             mounted: function () {
                 this.mounted = true
@@ -1162,7 +1160,12 @@
                     return true
                 },
                 doShowAds: function () {
-                    return !this.allAwardsObtained
+                    return false // !this.allAwardsObtained
+                },
+                collectAwardsMessage: function () {
+                    return this.doShowAds
+                        ? 'Collect all awards to remove ads!'
+                        : 'Try to collect all awards!'
                 }
             },
             watch: {
@@ -1300,7 +1303,7 @@
                         s['-webkit-animation'] = s.animation = 'collect-all-awards 10s'
                     })
                 },
-                runAds: function () {
+                initDevice: function () {
                     var self = this
 
                     function onAdLoaded(e) {
@@ -1310,7 +1313,7 @@
                         }
                     }
 
-                    function run() {
+                    function runAds() {
                         if (!admob)
                             return
                         admob.setOptions({
@@ -1338,8 +1341,9 @@
                         self.deviceready = true
                         if (self.mounted)
                             self.onMountedAndDeviceReady()
-                        
-                        run()
+
+                        if (self.doShowAds)
+                            run()
                     }
 
                     document.addEventListener("deviceready", onDeviceReady, false);
