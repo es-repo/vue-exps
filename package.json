@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/es-repo/vue-exps#readme",
   "devDependencies": {
+    "electron": "^1.6.10",
+    "electron-packager": "^8.7.1",
     "webpack": "^2.6.1"
   },
   "dependencies": {
