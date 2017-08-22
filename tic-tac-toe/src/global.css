@@ -1,0 +1,56 @@
+@import 'box-sizing.css';
+@import 'normalize.css';
+@font-face {
+  font-family: 'modak';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./modak.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(md-icons.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Baloo Bhaina';
+  font-style: normal;
+  font-weight: 400;
+  src: url(baloo-bhaina.woff2) format('woff2');
+}
+
+html {
+  font-size: 62.5%;
+}
+
+@media all and (min-width: 20em) {
+  html {
+    font-size: 80%;
+  }
+}
+
+@media all and (min-width: 22.5em) {
+  html {
+    font-size: 90%;
+  }
+}
+
+@media all and (min-width: 25.75em) {
+  html {
+    font-size: 100%;
+  }
+}
+
+@media all and (min-width: 48em) {
+  html {
+    font-size: 110%;
+  }
+}
+
+@media all and (min-width: 85em) {
+  html {
+    font-size: 130%;
+  }
+}

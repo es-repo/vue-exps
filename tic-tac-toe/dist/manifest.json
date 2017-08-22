@@ -1,0 +1,15 @@
+{
+  "name": "Tic-Tac-Toe",
+  "short_name": "Tic-Tac-Toe",
+  "background_color": "#4F30E8",
+  "theme_color": "#4F30E8",
+  "start_url": "./?utm_source=web_app_manifest",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

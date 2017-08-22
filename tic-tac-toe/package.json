@@ -1,0 +1,48 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "description",
+  "scripts": {
+    "start": "webpack-dev-server --hot",
+    "build": "webpack"
+  },
+  "repository": {
+    "url": "https://github.com"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.4",
+    "eslint": "^4.3.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-vue": "^3.8.0",
+    "file-loader": "^0.11.2",
+    "friendly-errors-webpack-plugin": "^1.6.1",
+    "html-webpack-plugin": "^2.29.0",
+    "postcss-animation": "0.0.12",
+    "postcss-cssnext": "^3.0.2",
+    "postcss-import": "^10.0.0",
+    "postcss-loader": "^2.0.6",
+    "sw-precache-webpack-plugin": "^0.11.4",
+    "vue-loader": "^12.2.2",
+    "vue-template-compiler": "^2.4.2",
+    "webmanifest-loader": "^0.2.1",
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1"
+  },
+  "dependencies": {
+    "box-sizing.css": "^1.0.1",
+    "normalize.css": "^7.0.0",
+    "vue": "^2.4.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not IE < 11"
+  ]
+}
