@@ -1,0 +1,68 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "description": "Chess",
+  "scripts": {
+    "start": "webpack-dev-server --hot",
+    "build": "webpack",
+    "build:prod": "webpack --env.production",
+    "test:unit": "npm run test:unit:watch -- -1",
+    "test:unit:watch": "tape-watch './src/**/*.test.js' -r ../test/tools/babel-browserless-testing.js -c -p tap-spec"
+  },
+  "repository": {
+    "url": "https://github.com"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "browser-env": "^3.2.0",
+    "canvas": "^1.6.7",
+    "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.7",
+    "cssnano": "^3.10.0",
+    "eslint": "^4.7.1",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "file-loader": "^0.11.2",
+    "friendly-errors-webpack-plugin": "^1.6.1",
+    "html-webpack-plugin": "^2.30.1",
+    "postcss-animation": "0.0.12",
+    "postcss-cssnext": "^3.0.2",
+    "postcss-import": "^10.0.0",
+    "postcss-loader": "^2.0.6",
+    "raf": "^3.3.2",
+    "require-extension-hooks": "^0.3.1",
+    "require-extension-hooks-babel": "^0.1.1",
+    "require-extension-hooks-vue": "^0.4.1",
+    "require-extension-hooks-vue-svg": "^0.1.0",
+    "style-loader": "^0.18.2",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0",
+    "tape-catch": "^1.0.6",
+    "tape-watch": "^2.3.0",
+    "vue-loader": "^13.0.5",
+    "vue-svg-loader": "^0.2.0",
+    "vue-template-compiler": "^2.4.2",
+    "vue-test-utils": "git+https://github.com/vuejs/vue-test-utils.git",
+    "webpack": "^3.5.5",
+    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-dev-server": "^2.7.1"
+  },
+  "dependencies": {
+    "box-sizing.css": "^1.0.1",
+    "deep-equal": "^1.0.1",
+    "eslint-plugin-vue": "^3.13.0",
+    "is-subset": "^0.1.1",
+    "normalize.css": "^7.0.0",
+    "vue": "^2.4.4",
+    "web-animations-js": "^2.3.1"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

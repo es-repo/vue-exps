@@ -1,0 +1,132 @@
+@import 'box-sizing.css';
+@import 'normalize.css';
+@font-face {
+  font-family: 'Titillium Web';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./titillium-web.woff2) format('woff2');
+}
+
+html {
+  font-size: 62.5%;
+}
+
+@media (min-width: 320px) and (orientation: portrait) {
+  html {
+    font-size: 66%;
+  }
+}
+
+@media (min-height: 320px) and (orientation: landscape) {
+  html {
+    font-size: 61%;
+  }
+}
+
+@media (min-width: 360px) and (orientation: portrait) {
+  html {
+    font-size: 74%;
+  }
+}
+
+@media (min-height: 360px) and (orientation: landscape) {
+  html {
+    font-size: 69%;
+  }
+}
+
+@media (min-width: 375px) and (orientation: portrait) {
+  html {
+    font-size: 77%;
+  }
+}
+
+@media (min-height: 375px) and (orientation: landscape) {
+  html {
+    font-size: 72%;
+  }
+}
+
+@media (min-width: 412px) and (orientation: portrait)  {
+  html {
+    font-size: 85%;
+  }
+}
+
+@media (min-height: 412px) and (orientation: landscape) {
+  html {
+    font-size: 78%;
+  }
+}
+
+
+@media (min-width: 500px) and (orientation: portrait)  {
+  html {
+    font-size: 100%;
+  }
+}
+
+@media (min-height: 500px) and (orientation: landscape) {
+  html {
+    font-size: 105%;
+  }
+}
+
+@media (min-width: 600px) and (orientation: portrait)  {
+  html {
+    font-size: 115%;
+  }
+}
+
+@media (min-height: 600px) and (orientation: landscape) {
+  html {
+    font-size: 110%;
+  }
+}
+
+@media (min-width: 700px) and (orientation: portrait)  {
+  html {
+    font-size: 135%;
+  }
+}
+
+@media (min-height: 700px) and (orientation: landscape) {
+  html {
+    font-size: 120%;
+  }
+}
+
+@media (min-width: 768px) and (orientation: portrait) {
+  html {
+    font-size: 150%;
+  }
+}
+
+@media (min-height: 768px) and (orientation: landscape) {
+  html {
+    font-size: 140%;
+  }
+}
+
+@media (min-width: 1024px) and (orientation: portrait) {
+  html {
+    font-size: 200%;
+  }
+}
+
+@media (min-height: 1024px) and (orientation: landscape) {
+  html {
+    font-size: 190%;
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 240%;
+  }
+}
+
+body {
+  font-family: "Titillium Web";
+  background: hsl(24, 26%, 32%);
+}

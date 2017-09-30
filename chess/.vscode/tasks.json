@@ -1,0 +1,25 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run all unit tests",
+      "type": "npm",
+      "script": "test:unit",
+      "group": "test"
+    },
+    {
+      "label": "Watch all unit tests",
+      "type": "npm",
+      "script": "test:unit:watch",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    }
+  ]
+}
