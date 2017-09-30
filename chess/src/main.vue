@@ -139,7 +139,7 @@ export default {
 
 .menu {
   position: absolute;
-  z-index: 3;
+  z-index: 2;
   box-shadow: 0 0 1em 0.2em var(--shadow-color);
   height: 100%;
   display: flex;

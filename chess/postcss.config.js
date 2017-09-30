@@ -6,7 +6,7 @@ const plugins = {
 
 const isProd = process.env.NODE_ENV == 'production'
 if (isProd)
-  plugins['cssnano'] = {}
+  plugins['cssnano'] = {zindex:false}
 
 module.exports = {
   plugins
