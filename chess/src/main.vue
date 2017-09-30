@@ -171,17 +171,18 @@ export default {
 }
 
 .control-button {
-  border: 2px solid var(--board-color);
-  background-color: var(--background-color);
-  color: var(--text-color);
+  border: none;
+  background-color: var(--board-color);
   border-radius: 4px;
   padding: 1px 8px 1px 8px;
   outline: none;
   box-shadow: 0 0 0.5em var(--shadow-color);
+  z-index:1;
+  color:white;
 }
 
 .control-button:active {
-  background: var(--board-color);
+  transform: translate(0, 2px);
 }
 
 .board-container {
