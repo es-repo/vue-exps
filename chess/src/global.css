@@ -108,6 +108,12 @@ html {
   }
 }
 
+@media (min-height: 960px) and (orientation: landscape) {
+  html {
+    font-size: 170%;
+  }
+}
+
 @media (min-width: 1024px) and (orientation: portrait) {
   html {
     font-size: 200%;
@@ -120,9 +126,33 @@ html {
   }
 }
 
-@media (min-width: 1440px) {
+@media (min-height: 1050px) and (orientation: landscape) {
   html {
-    font-size: 240%;
+    font-size: 180%;
+  }
+}
+
+@media (min-height: 1050px) and (orientation: landscape) {
+  html {
+    font-size: 180%;
+  }
+}
+
+@media (min-height: 1200px) and (orientation: landscape) {
+  html {
+    font-size: 200%;
+  }
+}
+
+@media (min-height: 1440px) and (orientation: landscape) {
+  html {
+    font-size: 250%;
+  }
+}
+
+@media (min-height: 2160px) and (orientation: landscape) {
+  html {
+    font-size: 350%;
   }
 }
 
