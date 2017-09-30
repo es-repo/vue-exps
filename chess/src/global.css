@@ -19,7 +19,7 @@ html {
 
 @media (min-height: 320px) and (orientation: landscape) {
   html {
-    font-size: 61%;
+    font-size: 59%;
   }
 }
 
@@ -31,7 +31,7 @@ html {
 
 @media (min-height: 360px) and (orientation: landscape) {
   html {
-    font-size: 69%;
+    font-size: 67%;
   }
 }
 
@@ -43,7 +43,7 @@ html {
 
 @media (min-height: 375px) and (orientation: landscape) {
   html {
-    font-size: 72%;
+    font-size: 70%;
   }
 }
 
@@ -68,7 +68,7 @@ html {
 
 @media (min-height: 500px) and (orientation: landscape) {
   html {
-    font-size: 105%;
+    font-size: 95%;
   }
 }
 

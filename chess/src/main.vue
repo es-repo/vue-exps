@@ -173,12 +173,13 @@ export default {
 .control-button {
   border: none;
   background-color: var(--board-color);
-  border-radius: 4px;
+  border-radius: 0.1em;
   padding: 1px 8px 1px 8px;
   outline: none;
   box-shadow: 0 0 0.5em var(--shadow-color);
   z-index:1;
   color:white;
+  font-size: 2em;
 }
 
 .control-button:active {
