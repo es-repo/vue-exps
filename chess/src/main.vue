@@ -70,6 +70,7 @@ export default {
         lastMoveUndone() {
           this.selectedPiece = null
           pieceMoveSound.play()
+          this.handleKingsInCheck()
         },
 
         async gameEnded(result) {
