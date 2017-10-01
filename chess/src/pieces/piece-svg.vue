@@ -1,16 +1,21 @@
 <template>
-    <svg :class="$style.container"
-         :viewBox="viewBox"
-         @click="onClick">
-      <component :is="model.type"
-                 viewBox="-8 -8 116 116"
-                 :class="[$style.piece, $style[model.color]]" :filter="svgFilterId" />
-      <face :colorClass="$style[colorInv]"
-            :viewBox="'-8 -8 116 116'" />
-    </svg>
+  <svg :class="$style.container"
+       :viewBox="viewBox"
+       @click="onClick">
+    <component :is="model.type"
+               viewBox="-8 -8 116 116"
+               :class="[$style.piece, $style[model.color]]"
+               :filter="svgFilterId" />
+    <face :colorClass="$style[colorInv]"
+          :viewBox="'-8 -8 116 116'"
+          :expression="faceExpressionEff"
+          :x="faceX"
+          :y="faceY" />
+  </svg>
 </template>
 
 <script>
+import wait from '../utils/wait'
 import Rook from './rook.svg'
 import Knight from './knight.svg'
 import Bishop from './bishop.svg'
@@ -33,6 +38,22 @@ export default {
     svgFilterId: {
       type: String,
       default: 'url(#shadow)'
+    },
+    faceExpr: {
+      type: String,
+      default: 'joy'
+    },
+    stickToFearExpresion: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  data() {
+    return {
+      faceX: 0,
+      faceY: 0,
+      faceExpression: this.faceExpr
     }
   },
 
@@ -41,21 +62,51 @@ export default {
       return this.model.color == 'white' ? 'black' : 'white'
     },
 
-    viewBox(){
+    viewBox() {
       return this.selected ? '3 3 94 94' : '-5 -5 110 110'
+    },
+
+    faceExpressionEff() {
+      return this.selected
+        ? 'laugh' :
+          this.stickToFearExpresion
+            ? 'fear'
+            : this.faceExpression
     }
   },
 
+  async mounted() {
+    await wait(5000)
+    this.animateFace()
+  },
+
   methods: {
-    onClick(){
+    onClick() {
       this.$emit('click', this.model)
+    },
+
+    async animateFace() {
+
+      const rnd = Math.random()
+      if (!this.stickToFearExpresion)
+        this.faceExpression = rnd < 0.2 ? 'laugh' : rnd < 0.3 ? 'fear' : 'joy'
+      if (rnd < 0.8) {
+        this.faceX = 0
+        await wait(Math.random() * 5000 + 2000)
+        this.animateFace()
+        return
+      }
+
+      const turnX = rnd > 0.9 ? -4 : 4
+      this.faceX = turnX
+      await wait(250)
+      this.animateFace()
     }
   }
 }
 </script>
 
 <style module>
-
 .container {
   width: 100%;
   will-change: transform;
@@ -76,5 +127,4 @@ export default {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
 </style>

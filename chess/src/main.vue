@@ -24,6 +24,7 @@
 
 <script module>
 import wait from './utils/wait'
+import Vue from 'vue'
 import Chess from './model/chess/game'
 import Player from './ui-player'
 import Board from './board.vue'
@@ -60,6 +61,7 @@ export default {
           if (move.capture != null && move.capture.pieces.length > 0) {
             pieceCapturedSound.play()
           }
+          this.handleKingsInCheck()
         },
         moveRejected(plr, move) {
           this.selectedPiece = null
@@ -90,7 +92,10 @@ export default {
     runNewGame(plr1, plr2) {
       this.gameResult = null
       this.chess = new Chess(plr1, plr2)
-      this.chess.run(this.gameHooks)
+      Vue.nextTick(() => {
+        this.chess.run(this.gameHooks)
+        pieceMoveSound.play()
+      })
     },
 
     getPlayerColors() {
@@ -119,10 +124,21 @@ export default {
           const plr1 = this.createUiPlayer(1, plrColors[0])
           const plr2 = this.createUiPlayer(1, plrColors[1])
           this.runNewGame(plr1, plr2)
-          pieceMoveSound.play()
           break
         }
       }
+    },
+
+    handleKingsInCheck() {
+      Vue.nextTick(() => {
+        for (const plr of this.chess.plrs) {
+          const inCheck = this.chess.isKingInCheck(plr)
+          for (const p of this.chess.board.findPiecesOfColor(plr.color)) {
+            const pieceVm = this.$refs.board.pieceVm(p.piece, p.x, p.y)
+            pieceVm.stickToFearExpresion = inCheck
+          }
+        }
+      })
     }
   }
 }
@@ -147,13 +163,13 @@ export default {
 }
 
 @media (orientation: landscape) {
-  .menu{
+  .menu {
     transform: translate(-5em, 0em);
   }
 }
 
 @media (orientation: portrait) {
-  .menu{
+  .menu {
     transform: translate(0em, -5em);
   }
 }
@@ -177,8 +193,8 @@ export default {
   padding: 1px 8px 1px 8px;
   outline: none;
   box-shadow: 0 0 0.5em var(--shadow-color);
-  z-index:1;
-  color:white;
+  z-index: 1;
+  color: white;
   font-size: 2em;
 }
 

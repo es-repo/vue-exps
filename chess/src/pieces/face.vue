@@ -1,14 +1,18 @@
 <template>
-  <face-svg :class="[$style.face, colorClass]"
-            :viewBox="viewBox" />
+  <component :is="expression"
+             :class="[$style.face, colorClass]"
+             :viewBox="viewBox" />
 </template>
 
 <script>
-import FaceSvg from './face.svg'
+import Joy from './face-expressions/joy.svg'
+import Laugh from './face-expressions/laugh.svg'
+import Fear from './face-expressions/fear.svg'
+
 
 export default {
   components: {
-    FaceSvg
+    Joy, Laugh, Fear
   },
 
   props: {
@@ -20,7 +24,7 @@ export default {
       type: String,
       required: true
     },
-    expression:{
+    expression: {
       type: String,
       default: 'joy'
     }
