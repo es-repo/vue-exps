@@ -86,27 +86,39 @@ html {
 
 @media (min-width: 700px) and (orientation: portrait)  {
   html {
-    font-size: 135%;
+    font-size: 150%;
   }
 }
 
 @media (min-height: 700px) and (orientation: landscape) {
   html {
-    font-size: 120%;
+    font-size: 140%;
   }
 }
 
 @media (min-width: 768px) and (orientation: portrait) {
   html {
-    font-size: 150%;
+    font-size: 160%;
   }
 }
 
 @media (min-height: 768px) and (orientation: landscape) {
   html {
-    font-size: 140%;
+    font-size: 150%;
   }
 }
+
+/* @media (min-width: 834px) and (orientation: portrait) {
+  html {
+    font-size: 150%;
+  }
+}
+
+@media (min-height: 834px) and (orientation: landscape) {
+  html {
+    font-size: 160%;
+  }
+} */
 
 @media (min-height: 960px) and (orientation: landscape) {
   html {
