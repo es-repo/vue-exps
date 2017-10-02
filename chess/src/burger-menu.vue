@@ -1,6 +1,7 @@
 <template>
   <nav class="wrapper"
-       @transitionend.self="onMenuOpenedOrClosed($event)">
+       @transitionend.self="onMenuOpenedOrClosed($event)"
+       onclick="void(0)">
     <div class="burger">
       <div class="burger-stroke"></div>
       <div class="burger-stroke"></div>
