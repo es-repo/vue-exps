@@ -1,17 +1,16 @@
 <template>
-  <main @click="gameResult=null">
+  <main>
     <burger-menu :class="$style.menu"
                  :items="menuItems"
                  @item-click="onMenuItemClick" />
     <div :class="$style.boardContainer">
-      <game-result :result="gameResult"
-                   v-if="gameResult!=null"
-                   :class="$style.gameResult" />
       <board :class="$style.board"
              :model="chess.board"
              :lastMove="lastMove"
              :selectedPiece="selectedPiece"
              ref="board" />
+      <game-result :result="gameResult"
+                   :class="$style.gameResult" />
     </div>
     <div :class="$style.gameControls">
       <button @click="onUndoClick"
@@ -87,6 +86,10 @@ export default {
         ? this.chess.log[this.chess.log.length - 1].move
         : null
     }
+  },
+
+  mounted(){
+    this.gameResult = {draw:true}
   },
 
   methods: {
