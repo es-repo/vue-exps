@@ -1,5 +1,6 @@
 <template>
-  <nav class="wrapper">
+  <nav class="wrapper"
+       @transitionend.self="onMenuOpenedOrClosed($event)">
     <div class="burger">
       <div class="burger-stroke"></div>
       <div class="burger-stroke"></div>
@@ -23,9 +24,25 @@ export default {
     }
   },
 
-  methods:{
-    onItemClick(i){
+  data() {
+    return {
+      isMenuOpened: false
+    }
+  },
+
+  methods: {
+    onItemClick(i) {
+      if (!this.isMenuOpened)
+        return
+
       this.$emit('item-click', i)
+    },
+
+    onMenuOpenedOrClosed(event) {
+      if(event.propertyName !== 'background-color')
+        return
+
+      this.isMenuOpened = !this.isMenuOpened
     }
   }
 }

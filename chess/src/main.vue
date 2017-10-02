@@ -47,6 +47,8 @@ export default {
     return {
       chess: new Chess(),
       menuItems: [
+        { text: 'New offline game', value: 'new-offline' },
+        { text: 'New offline game', value: 'new-offline' },
         { text: 'New offline game', value: 'new-offline' }],
       selectedPiece: null,
       gameResult: null,
@@ -86,10 +88,6 @@ export default {
         ? this.chess.log[this.chess.log.length - 1].move
         : null
     }
-  },
-
-  mounted(){
-    this.gameResult = {draw:true}
   },
 
   methods: {
