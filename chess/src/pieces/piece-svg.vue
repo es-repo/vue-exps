@@ -42,10 +42,6 @@ export default {
     faceExpr: {
       type: String,
       default: 'joy'
-    },
-    stickToFearExpresion: {
-      type: Boolean,
-      default: false
     }
   },
 
@@ -53,7 +49,8 @@ export default {
     return {
       faceX: 0,
       faceY: 0,
-      faceExpression: this.faceExpr
+      faceExpression: this.faceExpr,
+      stickToFearExpresion: false
     }
   },
 
