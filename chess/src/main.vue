@@ -197,7 +197,12 @@ export default {
   box-shadow: 0 0 0.5em var(--shadow-color);
   z-index: 1;
   color: white;
-  font-size: 2em;
+}
+
+@media all and (pointer:coarse) {
+  .control-button {
+    font-size: 2em;
+  }
 }
 
 .control-button:active {

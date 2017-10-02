@@ -39,7 +39,7 @@ export default {
     },
 
     onMenuOpenedOrClosed(event) {
-      if(event.propertyName !== 'background-color')
+      if (event.propertyName !== 'background-color')
         return
 
       this.isMenuOpened = !this.isMenuOpened
@@ -112,6 +112,12 @@ export default {
   justify-content: center;
   align-items: center;
   font-weight: bold;
+}
+
+@media all and (pointer:coarse) {
+  .menu-item {
+    font-size: 2em;
+  }
 }
 
 .wrapper:hover>.menu>.menu-item {
