@@ -26,6 +26,7 @@
     "css-loader": "^0.28.7",
     "cssnano": "^3.10.0",
     "eslint": "^4.7.1",
+    "eslint-plugin-vue": "^2.1.0",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "friendly-errors-webpack-plugin": "^1.6.1",
@@ -55,7 +56,6 @@
   "dependencies": {
     "box-sizing.css": "^1.0.1",
     "deep-equal": "^1.0.1",
-    "eslint-plugin-vue": "^3.13.0",
     "is-subset": "^0.1.1",
     "normalize.css": "^7.0.0",
     "vue": "^2.4.4",
