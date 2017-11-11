@@ -14,7 +14,6 @@ module.exports = {
       "error",
       2
     ],
-    "indentSwitchCase": true,
     "linebreak-style": [
       "error",
       "unix"

@@ -47,8 +47,6 @@ export default {
     return {
       chess: new Chess(),
       menuItems: [
-        { text: 'New offline game', value: 'new-offline' },
-        { text: 'New offline game', value: 'new-offline' },
         { text: 'New offline game', value: 'new-offline' }],
       selectedPiece: null,
       gameResult: null,
@@ -64,7 +62,7 @@ export default {
           }
           this.handleKingsInCheck()
         },
-        moveRejected(plr, move) {
+        moveRejected() {
           this.selectedPiece = null
           rejectedCapturedSound.play()
         },
@@ -122,12 +120,12 @@ export default {
       const plrColors = this.getPlayerColors()
       this.chess.stop()
       switch (i.value) {
-        case 'new-offline': {
-          const plr1 = this.createUiPlayer(1, plrColors[0])
-          const plr2 = this.createUiPlayer(1, plrColors[1])
-          this.runNewGame(plr1, plr2)
-          break
-        }
+      case 'new-offline': {
+        const plr1 = this.createUiPlayer(1, plrColors[0])
+        const plr2 = this.createUiPlayer(1, plrColors[1])
+        this.runNewGame(plr1, plr2)
+        break
+      }
       }
     },
 

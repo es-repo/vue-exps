@@ -77,6 +77,6 @@ export default class extends Player {
   detach() {
     this.uiVm.$refs.board.$off('piece-clicked', this.onPieceClickedHandler)
     this.uiVm.$refs.board.$off('cell-clicked', this.onCellClickedHandler)
-    uiVm.$off('undo-click', this.undoCliclHandler)
+    this.uiVm.$off('undo-click', this.undoCliclHandler)
   }
 }
