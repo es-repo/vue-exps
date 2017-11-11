@@ -66,9 +66,9 @@ export default {
     faceExpressionEff() {
       return this.selected
         ? 'laugh' :
-          this.stickToFearExpresion
-            ? 'fear'
-            : this.faceExpression
+        this.stickToFearExpresion
+          ? 'fear'
+          : this.faceExpression
     }
   },
 
