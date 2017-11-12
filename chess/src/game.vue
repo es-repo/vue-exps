@@ -54,28 +54,7 @@ export default {
 
       gameHooks: {
         bindTo: this,
-        moveAccepted(plr, move) {
-          this.selectedPiece = null
-          pieceMoveSound.play()
-          if (move.capture != null && move.capture.pieces.length > 0) {
-            pieceCapturedSound.play()
-          }
-          this.handleKingsInCheck()
-        },
-        moveRejected() {
-          this.selectedPiece = null
-          rejectedCapturedSound.play()
-        },
-        lastMoveUndone() {
-          this.selectedPiece = null
-          pieceMoveSound.play()
-          this.handleKingsInCheck()
-        },
 
-        async gameEnded(result) {
-          await wait(500)
-          this.gameResult = result
-        }
       }
     }
   },
@@ -91,10 +70,39 @@ export default {
   methods: {
     runNewGame(plr1, plr2) {
       this.gameResult = null
-      this.chess = new Chess(plr1, plr2)
+      const chess = new Chess(plr1, plr2)
+      this.attachGameEventHandlers(chess)
+      this.chess = chess
       Vue.nextTick(() => {
-        this.chess.run(this.gameHooks)
+        this.chess.run()
         pieceMoveSound.play()
+      })
+    },
+
+    attachGameEventHandlers(game) {
+      game.moveAcceptedEvent.on((plr, move) => {
+        this.selectedPiece = null
+        pieceMoveSound.play()
+        if (move.capture != null && move.capture.pieces.length > 0) {
+          pieceCapturedSound.play()
+        }
+        this.handleKingsInCheck()
+      })
+
+      game.moveRejectedEvent.on(() => {
+        this.selectedPiece = null
+        rejectedCapturedSound.play()
+      })
+
+      game.lastMoveUndoneEvent.on(() => {
+        this.selectedPiece = null
+        pieceMoveSound.play()
+        this.handleKingsInCheck()
+      })
+
+      game.gameEndedEvent.on(async (result) => {
+        await wait(500)
+        this.gameResult = result
       })
     },
 
@@ -197,7 +205,7 @@ export default {
   color: white;
 }
 
-@media all and (pointer:coarse) {
+@media all and (pointer: coarse) {
   .control-button {
     font-size: 2em;
   }

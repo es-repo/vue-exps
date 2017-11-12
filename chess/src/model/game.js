@@ -1,20 +1,24 @@
+import Event from '../utils/event'
+
 export default class {
   constructor(plrs) {
     this.plrs = plrs
     this.plrsQueue = [...plrs]
     this.stopPending = false
     this.log = []
+
+    this.playerOnTurnEvent = new Event()
+    this.lastMoveUndoneEvent = new Event()
+    this.moveDoneEvent = new Event()
+    this.moveAcceptedEvent = new Event()
+    this.moveRejectedEvent = new Event()
+    this.gameEndedEvent = new Event()
   }
 
-  async run(hooks) {
-    hooks = Object.assign(defaultHooks(), hooks || {})
-    bindHooks(hooks)
-
+  async run() {
     while (this.plrsQueue.length > 0) {
       const plr = this.plrsQueue.shift()
-
-      hooks.playerOnTurn(plr)
-
+      this.playerOnTurnEvent.emit(plr)
       const move = await plr.move()
       if (this.stopPending)
         return
@@ -26,7 +30,7 @@ export default class {
         if (logEntry) {
           // Put current player to the queue end.
           this.plrsQueue.push(plr)
-          hooks.lastMoveUndone(logEntry.plr, logEntry.move)
+          this.lastMoveUndoneEvent.emit(logEntry.plr, logEntry.move)
         } else {
           // If log is empty, that is no moves was done,
           // then just let current player move again.
@@ -35,25 +39,25 @@ export default class {
         continue
       }
 
-      hooks.moveDone(move)
+      this.moveDoneEvent.emit(move)
 
       const isValidMove = this.validateMove(plr, move)
       if (isValidMove) {
         this.commitMove(plr, move)
         // Put current player to the queue end.
         this.plrsQueue.push(plr)
-        hooks.moveAccepted(plr, move)
+        this.moveAcceptedEvent.emit(plr, move)
       }
       else {
         // Put player to the queue begin to let him make a move again.
         this.plrsQueue.unshift(plr)
-        hooks.moveRejected(plr, move)
+        this.moveRejectedEvent.emit(plr, move)
       }
 
       const gameResult = this.getGameResult(plr, move)
       if (gameResult != null && gameResult.isGameEnd) {
         this.plrsQueue = []
-        hooks.gameEnded(gameResult)
+        this.gameEndedEvent.emit(gameResult)
       }
     }
   }
@@ -76,28 +80,5 @@ export default class {
 
   stop() {
     this.stopPending = true
-  }
-}
-
-function defaultHooks() {
-  const nop = function () { }
-  return {
-    playerOnTurn: nop,
-    moveDone: nop,
-    moveAccepted: nop,
-    moveRejected: nop,
-    gameEnded: nop,
-    lastMoveUndone: nop
-  }
-}
-
-function bindHooks(hooks) {
-  if (hooks.bindTo == null)
-    return
-
-  const defHooks = defaultHooks()
-  for (const f in defHooks) {
-    if (hooks[f] instanceof Function)
-      hooks[f] = hooks[f].bind(hooks.bindTo)
   }
 }
