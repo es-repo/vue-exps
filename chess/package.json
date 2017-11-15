@@ -56,6 +56,7 @@
   "dependencies": {
     "box-sizing.css": "^1.0.1",
     "deep-equal": "^1.0.1",
+    "firebase": "^4.6.2",
     "is-subset": "^0.1.1",
     "normalize.css": "^7.0.0",
     "vue": "^2.5.3",

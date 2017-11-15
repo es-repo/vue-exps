@@ -5,7 +5,7 @@
                  @item-click="onMenuItemClick" />
     <div :class="$style.boardContainer">
       <board :class="$style.board"
-             :model="chess.board"
+             :model="game.board"
              :lastMove="lastMove"
              :selectedPiece="selectedPiece"
              ref="board" />
@@ -14,7 +14,7 @@
     </div>
     <div :class="$style.gameControls">
       <button @click="onUndoClick"
-              :style="{visibility: chess.log.length>0?'':'hidden'}"
+              :style="{visibility: game.log.length>0?'':'hidden'}"
               :class="$style.controlButton">Undo</button>
     </div>
 
@@ -25,10 +25,12 @@
 import wait from './utils/wait'
 import Vue from 'vue'
 import Chess from './model/chess/game'
-import Player from './ui-player'
+import UIPlayer from './ui-player'
 import Board from './board.vue'
 import BurgerMenu from './burger-menu.vue'
 import GameResult from './game-result.vue'
+import OnlineGameFactory from './online-game-factory'
+import OfflineGameFactory from './offline-game-factory'
 
 import pieceMoveSoundFile from './pieces/sounds/move.mp3'
 const pieceMoveSound = new Audio(pieceMoveSoundFile)
@@ -40,43 +42,64 @@ import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
 export default {
-
   components: { Board, BurgerMenu, GameResult },
+
+  props: {
+    'db': {
+      required: true,
+      type: Object
+    },
+    'user': {
+      type: Object,
+      default: null
+    }
+  },
 
   data() {
     return {
-      chess: new Chess(),
+      game: new Chess(),
       menuItems: [
+        { text: 'New online game', value: 'new-online' },
         { text: 'New offline game', value: 'new-offline' }],
       selectedPiece: null,
       gameResult: null,
-      bottomPlrColor: 'black',
-
-      gameHooks: {
-        bindTo: this,
-
-      }
+      onlineGameFactory: new OnlineGameFactory(this.db, this),
+      offlineGameFactory: new OfflineGameFactory(this),
     }
   },
 
   computed: {
     lastMove() {
-      return this.chess.log.length > 0
-        ? this.chess.log[this.chess.log.length - 1].move
+      return this.game.log.length > 0
+        ? this.game.log[this.game.log.length - 1].move
         : null
     }
   },
 
+  created() {
+    window.gm = this.onlineGameFactory
+  },
+
   methods: {
-    runNewGame(plr1, plr2) {
+    startGame(game) {
       this.gameResult = null
-      const chess = new Chess(plr1, plr2)
-      this.attachGameEventHandlers(chess)
-      this.chess = chess
+      this.attachGameEventHandlers(game)
+      this.attachPlayerEventHandlres(game.plrs)
+      this.game = game
       Vue.nextTick(() => {
-        this.chess.run()
+        this.game.run()
         pieceMoveSound.play()
       })
+    },
+
+    attachPlayerEventHandlres(plrs) {
+      for (const p of plrs) {
+        if (p instanceof UIPlayer) {
+          p.pieceSelectedEvent.on(piece => {
+            this.selectedPiece = piece
+          })
+        }
+      }
     },
 
     attachGameEventHandlers(game) {
@@ -86,7 +109,7 @@ export default {
         if (move.capture != null && move.capture.pieces.length > 0) {
           pieceCapturedSound.play()
         }
-        this.handleKingsInCheck()
+        this.handleKingInCheck()
       })
 
       game.moveRejectedEvent.on(() => {
@@ -97,7 +120,7 @@ export default {
       game.lastMoveUndoneEvent.on(() => {
         this.selectedPiece = null
         pieceMoveSound.play()
-        this.handleKingsInCheck()
+        this.handleKingInCheck()
       })
 
       game.gameEndedEvent.on(async (result) => {
@@ -106,42 +129,33 @@ export default {
       })
     },
 
-    getPlayerColors() {
-      this.bottomPlrColor = this.bottomPlrColor === 'white' ? 'black' : 'white'
-      const upperPlrColor = this.bottomPlrColor === 'white' ? 'black' : 'white'
-      return [this.bottomPlrColor, upperPlrColor]
-    },
-
-    createUiPlayer(id, color) {
-      const plr = new Player(this, id, color)
-      plr.pieceSelectedEvent.on(piece => {
-        this.selectedPiece = piece
-      })
-      return plr
-    },
-
     onUndoClick() {
       this.$emit('undo-click')
     },
 
-    onMenuItemClick(i) {
-      const plrColors = this.getPlayerColors()
-      this.chess.stop()
+    async onMenuItemClick(i) {
+      this.game.stop()
       switch (i.value) {
       case 'new-offline': {
-        const plr1 = this.createUiPlayer(1, plrColors[0])
-        const plr2 = this.createUiPlayer(1, plrColors[1])
-        this.runNewGame(plr1, plr2)
+        const game = this.offlineGameFactory.create()
+        this.startGame(game)
+        break
+      }
+      case 'new-online': {
+        // TODO: show wait message
+        // TODO: handle exception (no internet connection for example)
+        const game = await this.onlineGameFactory.create(this.user)
+        this.startGame(game)
         break
       }
       }
     },
 
-    handleKingsInCheck() {
+    handleKingInCheck() {
       Vue.nextTick(() => {
-        for (const plr of this.chess.plrs) {
-          const inCheck = this.chess.isKingInCheck(plr)
-          for (const p of this.chess.board.findPiecesOfColor(plr.color)) {
+        for (const plr of this.game.plrs) {
+          const inCheck = this.game.isKingInCheck(plr)
+          for (const p of this.game.board.findPiecesOfColor(plr.color)) {
             const pieceVm = this.$refs.board.pieceVm(p.piece, p.x, p.y)
             pieceVm.stickToFearExpresion = inCheck
           }
