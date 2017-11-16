@@ -10,7 +10,9 @@
              :selectedPiece="selectedPiece"
              ref="board" />
       <game-result :result="gameResult"
-                   :class="$style.gameResult" />
+                   :class="$style.notification" />
+      <notification :message="waitMessage"
+                   :class="$style.notification" />
     </div>
     <div :class="$style.gameControls">
       <button @click="onUndoClick"
@@ -29,6 +31,7 @@ import UIPlayer from './ui-player'
 import Board from './board.vue'
 import BurgerMenu from './burger-menu.vue'
 import GameResult from './game-result.vue'
+import Notification from './notification.vue'
 import OnlineGameFactory from './online-game-factory'
 import OfflineGameFactory from './offline-game-factory'
 
@@ -42,7 +45,7 @@ import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
 export default {
-  components: { Board, BurgerMenu, GameResult },
+  components: { Board, BurgerMenu, GameResult, Notification },
 
   props: {
     'db': {
@@ -65,6 +68,7 @@ export default {
       gameResult: null,
       onlineGameFactory: new OnlineGameFactory(this.db, this),
       offlineGameFactory: new OfflineGameFactory(this),
+      waitMessage: ''
     }
   },
 
@@ -142,9 +146,10 @@ export default {
         break
       }
       case 'new-online': {
-        // TODO: show wait message
+        this.waitMessage = 'Waiting for opponent...'
         // TODO: handle exception (no internet connection for example)
         const game = await this.onlineGameFactory.create(this.user)
+        this.waitMessage = ''
         this.startGame(game)
         break
       }
@@ -233,7 +238,7 @@ export default {
   position: relative;
 }
 
-.game-result {
+.notification {
   box-shadow: 0 0 0.5em 0.2em var(--shadow-color);
   position: absolute;
   z-index: 3;

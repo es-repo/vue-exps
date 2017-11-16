@@ -1,6 +1,7 @@
 <template>
   <button :class="$style.container"
-          ref="btn">
+          ref="btn"
+          v-if="!isEmpty">
     <h1>{{message}}</h1>
   </button>
 </template>
@@ -11,49 +12,36 @@ export default {
     message: {
       type: String,
       default: null
+    },
+
+    hideOnBlur: {
+      type: Boolean,
+      default: true
     }
   },
 
-  mounted(){
-    this.bringToTopIfNonEmpty()
-  },
-
-  watch: {
-    message() {
-      this.bringToTopIfNonEmpty()
-    }
-  },
-
-  methods:{
-    bringToTopIfNonEmpty(){
-      if (this.message != '') {
-        this.$refs.btn.focus()
-      }
+  computed: {
+    isEmpty() {
+      return this.message == null || this.message == ''
     }
   }
 }
+
 </script>
 
 <style module>
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 22em;
-  height: 5em;
+  min-height: 5em;
+  height: auto;
   background-color: white;
   border-radius: 0.3em;
   color: #444;
-  z-index:-1;
   outline: none;
   border: none;
 }
 
-.container:focus {
-  z-index: 1;
-}
-
-.container>h1:first-letter {
+.container > h1:first-letter {
   text-transform: uppercase;
 }
 </style>
