@@ -11,17 +11,8 @@ export default class {
   }
 
   async create(usr) {
-    try {
-      const game = await this.join(usr)
-      if (game == null) {
-        return this.initiate(usr)
-      }
-      else
-        return game
-    }
-    catch (error) {
-      return this.initiate(usr)
-    }
+    return this.join(usr)
+      .catch(() => this.initiate(usr))
   }
 
   async initiate(usr) {
@@ -50,7 +41,7 @@ export default class {
         }
       }
       if (gameDoc == null)
-        return null
+        return Promise.reject(null)
 
       const thisPlr = this.createUiPlayer(usr)
       const gameDocData = gameDoc.data()

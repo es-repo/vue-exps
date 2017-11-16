@@ -1,9 +1,9 @@
 <template>
-  <button :class="$style.container"
+  <button :class="[$style.container, $style[severity]]"
           ref="btn"
           v-if="!isEmpty && !hide"
           @blur="onBlur">
-    <h1>{{message}}</h1>
+    <h1>{{msg}}</h1>
   </button>
 </template>
 
@@ -13,7 +13,7 @@ import Vue from 'vue'
 export default {
   props: {
     message: {
-      type: String,
+      type: [String, Object],
       default: null
     },
 
@@ -31,7 +31,19 @@ export default {
 
   computed: {
     isEmpty() {
-      return this.message == null || this.message == ''
+      return this.msg == null || this.msg == ''
+    },
+
+    msg(){
+      return this.message instanceof Object
+        ? this.message.message
+        : this.message
+    },
+
+    severity(){
+      return this.message instanceof Object && this.message.severity
+        ? this.message.severity
+        : 'info'
     }
   },
 
@@ -61,11 +73,19 @@ export default {
   width: 22em;
   min-height: 5em;
   height: auto;
-  background-color: white;
   border-radius: 0.3em;
-  color: #444;
   outline: none;
   border: none;
+}
+
+.info {
+  background-color: white;
+  color: #444;
+}
+
+.error {
+  background-color: hsl(0, 100%, 70%);
+  color: white;
 }
 
 .container > h1:first-letter {

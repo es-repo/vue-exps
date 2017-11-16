@@ -14,7 +14,7 @@
              ref="board" />
       <game-result :result="gameResult"
                    :class="$style.notification" />
-      <notification :message="waitMessage"
+      <notification :message="notificationMessage"
                     :class="$style.notification" />
     </div>
     <div :class="$style.gameControls">
@@ -49,6 +49,9 @@ const pieceCapturedSound = new Audio(pieceCapturedSoundFile)
 import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
+const waitMessage = 'Waiting for opponent ...'
+const errorMessage = { message: 'Something gone wrong.', severity: 'error' }
+
 export default {
   components: { Board, BurgerMenu, GameResult, Notification, PlayerPanel },
 
@@ -73,7 +76,7 @@ export default {
       gameResult: null,
       onlineGameFactory: new OnlineGameFactory(this.db, this),
       offlineGameFactory: new OfflineGameFactory(this),
-      waitMessage: '',
+      notificationMessage: '',
       isOnlineGame: false,
       isOnlineGameCanceled: false
     }
@@ -97,10 +100,6 @@ export default {
         ? this.game.plrs[0]
         : null
     }
-  },
-
-  created() {
-    window.gm = this.onlineGameFactory
   },
 
   methods: {
@@ -159,26 +158,34 @@ export default {
     async onMenuItemClick(i) {
       this.game.stop()
       switch (i.value) {
+
       case 'new-offline': {
         this.isOnlineGame = false
         this.isOnlineGameCanceled = true
-        this.waitMessage = ''
+        this.notificationMessage = ''
         const game = this.offlineGameFactory.create()
         this.startGame(game)
         break
       }
+
       case 'new-online': {
-        if (this.waitMessage == '') {
+        if (this.notificationMessage != waitMessage) {
           this.isOnlineGame = true
           this.isOnlineGameCanceled = false
-          this.waitMessage = 'Waiting for opponent ...'
+          this.notificationMessage = waitMessage
           // Create empty game instance to clear board while online game will be creating.
           this.game = new Chess()
-          // TODO: handle exception (no internet connection for example)
-          const game = await this.onlineGameFactory.create(this.user)
-          if (!this.isOnlineGameCanceled){
-            this.waitMessage = ''
-            this.startGame(game)
+
+          try {
+            const game = await this.onlineGameFactory.create(this.user)
+            if (!this.isOnlineGameCanceled) {
+              this.notificationMessage = ''
+              this.startGame(game)
+            }
+          }
+          catch (e) {
+            console.error(e)
+            this.notificationMessage = errorMessage
           }
         }
         break
@@ -271,7 +278,7 @@ export default {
 .notification {
   box-shadow: 0 0 0.5em 0.2em var(--shadow-color);
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
