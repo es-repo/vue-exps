@@ -18,12 +18,12 @@ Firebase.initializeApp({
 export default {
   components: { Game },
   data() {
-    const usrId = Math.random() * 10000 | 0
+    const usrId = Math.random() * 100000 | 0
     return {
       db: Firebase.firestore(),
       user: {
         id: usrId,
-        name: 'vasya_' + usrId }
+        name: 'vasya-' + usrId }
     }
   }
 }

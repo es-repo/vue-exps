@@ -131,7 +131,7 @@ export default class {
   async addMoveToDb(gameDocRef, plr, move) {
     const moveDocData = {
       plrId: plr.id,
-      move: JSON.stringify(move),
+      move: JSON.stringify({from: move.from, to: move.to}),
       timestamp: Firebase.firestore.FieldValue.serverTimestamp()
     }
     return gameDocRef.collection('moves').add(moveDocData)
