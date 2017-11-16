@@ -2,7 +2,7 @@
   <nav class="wrapper"
        @transitionend.self="onMenuOpenedOrClosed($event)"
        onclick="void(0)">
-    <div class="burger">
+    <div class="burger" ref="burger">
       <div class="burger-stroke"></div>
       <div class="burger-stroke"></div>
       <div class="burger-stroke"></div>
@@ -17,6 +17,12 @@
 </template>
 
 <script>
+
+function isElementHidden(el){
+  //https://stackoverflow.com/a/21696585
+  return el.offsetParent == null
+}
+
 export default {
   props: {
     items: {
@@ -43,7 +49,7 @@ export default {
       if (event.propertyName !== 'background-color')
         return
 
-      this.isMenuOpened = !this.isMenuOpened
+      this.isMenuOpened = isElementHidden(this.$refs.burger)
     }
   }
 }
