@@ -17,8 +17,8 @@
       <notification :message="waitMessage"
                     :class="$style.notification" />
     </div>
-    <player-panel :player="bottomPlayer" />
     <div :class="$style.gameControls">
+      <player-panel :player="bottomPlayer" />
       <button @click="onUndoClick"
               :style="{visibility: !isOnlineGame && game.log.length>0?'':'hidden'}"
               :class="$style.controlButton">Undo</button>
@@ -239,7 +239,7 @@ export default {
 
 .game-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 0.5em;
 }
 
