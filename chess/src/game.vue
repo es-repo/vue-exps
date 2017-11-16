@@ -172,6 +172,8 @@ export default {
           this.isOnlineGame = true
           this.isOnlineGameCanceled = false
           this.waitMessage = 'Waiting for opponent ...'
+          // Create empty game instance to clear board while online game will be creating.
+          this.game = new Chess()
           // TODO: handle exception (no internet connection for example)
           const game = await this.onlineGameFactory.create(this.user)
           if (!this.isOnlineGameCanceled){
