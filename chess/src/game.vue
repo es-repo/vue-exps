@@ -37,7 +37,7 @@ import OfflineGameFactory from './offline-game-factory'
 import Board from './board.vue'
 import BurgerMenu from './burger-menu.vue'
 import GameResult from './game-result.vue'
-import Notification from './notification.vue'
+import Notification from './ui-utils/notification.vue'
 import PlayerPanel from './player-panel.vue'
 
 import pieceMoveSoundFile from './pieces/sounds/move.mp3'
