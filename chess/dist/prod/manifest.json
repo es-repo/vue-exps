@@ -1,0 +1,15 @@
+{
+  "name": "Chess",
+  "short_name": "Chess",
+  "background_color": "#664d3c",
+  "theme_color": "#664d3c",
+  "start_url": "./?utm_source=web_app_manifest",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}
