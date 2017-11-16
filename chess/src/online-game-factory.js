@@ -37,7 +37,7 @@ export default class {
 
   async join(usr) {
     return this.db.runTransaction(async transaction => {
-      const gameDocs = await this.findGamesToJoin()
+      const gameDocs = await this.findGamesToJoin(usr)
       // Take first game doc which is still has plr2Id field
       // set to null in transaction scope.
       let gameDoc = null
@@ -68,18 +68,21 @@ export default class {
     })
   }
 
-  async findGamesToJoin() {
+  async findGamesToJoin(usr) {
     // Find game docs with plr2Id field not set.
     const res = await this.db.collection('games')
       .where('plr2Id', '==', null)
       .orderBy('timestamp', 'desc')
       .get()
 
-    // Filter game docs older then 3 min.
+    // Filter game docs older then 3 min
+    // and game initiated by same user.
     const mins = 3
     const filtered = []
+
     res.forEach(d => {
-      if (!olderThenMinutes(d.data().timestamp, mins)) {
+      if (!olderThenMinutes(d.data().timestamp, mins) &&
+        d.data().plr1Id != usr.id) {
         filtered.push(d)
       }
     })
