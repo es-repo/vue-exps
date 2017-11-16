@@ -1,7 +1,7 @@
 <template>
   <section>
     <div style="text-align:right">
-      <player-panel :player="topPlayer"/>
+      <player-panel :player="topPlayer" />
     </div>
     <burger-menu :class="$style.menu"
                  :items="menuItems"
@@ -15,7 +15,7 @@
       <game-result :result="gameResult"
                    :class="$style.notification" />
       <notification :message="waitMessage"
-                   :class="$style.notification" />
+                    :class="$style.notification" />
     </div>
     <player-panel :player="bottomPlayer" />
     <div :class="$style.gameControls">
@@ -50,7 +50,7 @@ import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
 export default {
-  components: { Board, BurgerMenu, GameResult, Notification, PlayerPanel   },
+  components: { Board, BurgerMenu, GameResult, Notification, PlayerPanel },
 
   props: {
     'db': {
@@ -74,7 +74,8 @@ export default {
       onlineGameFactory: new OnlineGameFactory(this.db, this),
       offlineGameFactory: new OfflineGameFactory(this),
       waitMessage: '',
-      isOnlineGame: false
+      isOnlineGame: false,
+      isOnlineGameCanceled: false
     }
   },
 
@@ -85,13 +86,13 @@ export default {
         : null
     },
 
-    topPlayer(){
+    topPlayer() {
       return this.game != null && this.game.plrs.length > 1
         ? this.game.plrs[1]
         : null
     },
 
-    bottomPlayer(){
+    bottomPlayer() {
       return this.game != null && this.game.plrs.length > 0
         ? this.game.plrs[0]
         : null
@@ -160,17 +161,24 @@ export default {
       switch (i.value) {
       case 'new-offline': {
         this.isOnlineGame = false
+        this.isOnlineGameCanceled = true
+        this.waitMessage = ''
         const game = this.offlineGameFactory.create()
         this.startGame(game)
         break
       }
       case 'new-online': {
-        this.isOnlineGame = true
-        this.waitMessage = 'Waiting for opponent ...'
-        // TODO: handle exception (no internet connection for example)
-        const game = await this.onlineGameFactory.create(this.user)
-        this.waitMessage = ''
-        this.startGame(game)
+        if (this.waitMessage == '') {
+          this.isOnlineGame = true
+          this.isOnlineGameCanceled = false
+          this.waitMessage = 'Waiting for opponent ...'
+          // TODO: handle exception (no internet connection for example)
+          const game = await this.onlineGameFactory.create(this.user)
+          if (!this.isOnlineGameCanceled){
+            this.waitMessage = ''
+            this.startGame(game)
+          }
+        }
         break
       }
       }

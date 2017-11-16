@@ -72,7 +72,7 @@ export default {
 .burger-stroke {
   background: var(--second-color);
   width: 2em;
-  height: 0.3em;
+  height: 0.32em;
   margin-top: 0.4em;
   margin-bottom: 0.4em;
 }
