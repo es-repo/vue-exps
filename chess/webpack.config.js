@@ -4,6 +4,7 @@ const HtmlPlugin = require('html-webpack-plugin')
 const CleanPlugin = require('clean-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = function (env) {
@@ -71,6 +72,20 @@ module.exports = function (env) {
             loader: 'file-loader',
             options: { name: '[name].[ext]' }
           }
+        },
+        {
+          test: /manifest\.json/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: '[name].[ext]'
+              }
+            },
+            {
+              loader: 'webmanifest-loader'
+            }
+          ]
         }
       ]
     },
@@ -108,6 +123,15 @@ module.exports = function (env) {
         filename: '[name].[contenthash:4].css',
         disable: !isProd
       }),
+
+      // To generate service worker for progressive web app.
+      new SWPrecacheWebpackPlugin(
+        {
+          cacheId: 'chess',
+          minify: true,
+          staticFileGlobsIgnorePatterns: [/\.map$/, /manifest\.json$/],
+        }
+      ),
 
       ...isProd
         ? [
