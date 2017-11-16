@@ -16,7 +16,7 @@
     </div>
     <div :class="$style.gameControls">
       <button @click="onUndoClick"
-              :style="{visibility: game.log.length>0?'':'hidden'}"
+              :style="{visibility: !isOnlineGame && game.log.length>0?'':'hidden'}"
               :class="$style.controlButton">Undo</button>
     </div>
 
@@ -68,7 +68,8 @@ export default {
       gameResult: null,
       onlineGameFactory: new OnlineGameFactory(this.db, this),
       offlineGameFactory: new OfflineGameFactory(this),
-      waitMessage: ''
+      waitMessage: '',
+      isOnlineGame: false
     }
   },
 
@@ -141,12 +142,14 @@ export default {
       this.game.stop()
       switch (i.value) {
       case 'new-offline': {
+        this.isOnlineGame = false
         const game = this.offlineGameFactory.create()
         this.startGame(game)
         break
       }
       case 'new-online': {
-        this.waitMessage = 'Waiting for opponent...'
+        this.isOnlineGame = true
+        this.waitMessage = 'Waiting for opponent ...'
         // TODO: handle exception (no internet connection for example)
         const game = await this.onlineGameFactory.create(this.user)
         this.waitMessage = ''
