@@ -1,12 +1,15 @@
 <template>
   <button :class="$style.container"
           ref="btn"
-          v-if="!isEmpty">
+          v-if="!isEmpty && !hide"
+          @blur="onBlur">
     <h1>{{message}}</h1>
   </button>
 </template>
 
 <script>
+import Vue from 'vue'
+
 export default {
   props: {
     message: {
@@ -16,13 +19,37 @@ export default {
 
     hideOnBlur: {
       type: Boolean,
-      default: true
+      default: false
+    }
+  },
+
+  data(){
+    return {
+      hide: false
     }
   },
 
   computed: {
     isEmpty() {
       return this.message == null || this.message == ''
+    }
+  },
+
+  watch:{
+    message(){
+      // If message was updated then show notification if it was hidden.
+      this.hide = false
+      Vue.nextTick(() => {
+        if (this.hideOnBlur && this.$refs.btn)
+          this.$refs.btn.focus()
+      })
+    }
+  },
+
+  methods:{
+    onBlur(){
+      if (this.hideOnBlur)
+        this.hide = true
     }
   }
 }

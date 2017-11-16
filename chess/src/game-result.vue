@@ -1,5 +1,5 @@
 <template>
-  <notification :message="message"></notification>
+  <notification :message="message" :hideOnBlur="true"></notification>
 </template>
 
 <script>
