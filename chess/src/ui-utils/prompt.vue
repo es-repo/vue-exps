@@ -77,13 +77,7 @@ export default {
   align-items: center;
   padding: 0.5em;
   color: var(--text-color);
-  font-size: 1.2rem;
-}
-
-@media all and (pointer:coarse) {
-  .container {
-    font-size: 1.3rem;
-  }
+  font-size: 1.35rem;
 }
 
 .input {

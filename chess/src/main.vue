@@ -37,7 +37,7 @@ export default {
 
   methods: {
     createUser(userName) {
-      this.user = { id: uuid(), name: userName }
+      this.user = { id: uuid(), name: userName.trim() }
       this.saveUserToLocalStorage(this.user)
     },
 
