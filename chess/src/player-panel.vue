@@ -1,6 +1,6 @@
 <template>
-  <div v-if="player != null" :class="$style.container">
-    {{player.name}}
+  <div :class="$style.container">
+    {{name}}
   </div>
 </template>
 
@@ -12,6 +12,12 @@ export default {
     player: {
       type: Player,
       default: null
+    }
+  },
+
+  computed:{
+    name(){
+      return this.player != null ? this.player.name : ' '
     }
   }
 }
@@ -25,7 +31,7 @@ export default {
   padding-bottom: 0.5em;
   text-shadow: 0 0 0.5em black;
   font-weight: bold;
-  min-height: 1em;
+  min-height: 2rem;
 }
 
 .container:first-letter {

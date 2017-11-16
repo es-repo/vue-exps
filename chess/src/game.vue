@@ -247,7 +247,6 @@ export default {
 .game-controls {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5em;
 }
 
 .control-button {
@@ -259,6 +258,7 @@ export default {
   box-shadow: 0 0 0.5em var(--shadow-color);
   z-index: 1;
   color: white;
+  margin-top: 0.5em;
 }
 
 @media all and (pointer: coarse) {
