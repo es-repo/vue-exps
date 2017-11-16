@@ -34,6 +34,12 @@ export default {
   min-height: 2rem;
 }
 
+@media all and (pointer:coarse) {
+  .container {
+    font-size: 2rem;
+  }
+}
+
 .container:first-letter {
   text-transform: uppercase;
 }

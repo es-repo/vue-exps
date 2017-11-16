@@ -123,7 +123,7 @@ export default {
 
 @media all and (pointer:coarse) {
   .menu-item {
-    font-size: 2em;
+    font-size: 2rem;
   }
 }
 

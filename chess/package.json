@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Chess",
   "scripts": {
-    "start": "webpack-dev-server --hot",
+    "start": "webpack-dev-server --hot --host 0.0.0.0",
     "build": "webpack",
     "build:prod": "webpack --env.production",
     "test:unit": "npm run test:unit:watch -- -1",

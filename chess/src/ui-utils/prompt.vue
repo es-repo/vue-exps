@@ -80,13 +80,19 @@ export default {
   font-size: 1.2rem;
 }
 
+@media all and (pointer:coarse) {
+  .container {
+    font-size: 1.3rem;
+  }
+}
+
 .input {
   width: 100%;
   border: none;
   border-bottom: 2px solid var(--second-color);
   outline: none;
   background: transparent;
-  font-size: 1.5rem;
+  font-size: 1.5em;
   color: var(--text-color);
 }
 
