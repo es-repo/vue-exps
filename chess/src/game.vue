@@ -1,5 +1,8 @@
 <template>
   <section>
+    <div style="text-align:right">
+      <player-panel :player="topPlayer"/>
+    </div>
     <burger-menu :class="$style.menu"
                  :items="menuItems"
                  @item-click="onMenuItemClick" />
@@ -14,6 +17,7 @@
       <notification :message="waitMessage"
                    :class="$style.notification" />
     </div>
+    <player-panel :player="bottomPlayer" />
     <div :class="$style.gameControls">
       <button @click="onUndoClick"
               :style="{visibility: !isOnlineGame && game.log.length>0?'':'hidden'}"
@@ -28,12 +32,13 @@ import wait from './utils/wait'
 import Vue from 'vue'
 import Chess from './model/chess/game'
 import UIPlayer from './ui-player'
+import OnlineGameFactory from './online-game-factory'
+import OfflineGameFactory from './offline-game-factory'
 import Board from './board.vue'
 import BurgerMenu from './burger-menu.vue'
 import GameResult from './game-result.vue'
 import Notification from './notification.vue'
-import OnlineGameFactory from './online-game-factory'
-import OfflineGameFactory from './offline-game-factory'
+import PlayerPanel from './player-panel.vue'
 
 import pieceMoveSoundFile from './pieces/sounds/move.mp3'
 const pieceMoveSound = new Audio(pieceMoveSoundFile)
@@ -45,7 +50,7 @@ import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
 export default {
-  components: { Board, BurgerMenu, GameResult, Notification },
+  components: { Board, BurgerMenu, GameResult, Notification, PlayerPanel   },
 
   props: {
     'db': {
@@ -77,6 +82,18 @@ export default {
     lastMove() {
       return this.game.log.length > 0
         ? this.game.log[this.game.log.length - 1].move
+        : null
+    },
+
+    topPlayer(){
+      return this.game != null && this.game.plrs.length > 1
+        ? this.game.plrs[1]
+        : null
+    },
+
+    bottomPlayer(){
+      return this.game != null && this.game.plrs.length > 0
+        ? this.game.plrs[0]
         : null
     }
   },

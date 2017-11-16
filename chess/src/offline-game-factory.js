@@ -15,7 +15,7 @@ export default class {
   }
 
   createPlayer(id, color) {
-    return new UIPlayer(this.uiVm, id, color, '')
+    return new UIPlayer(this.uiVm, id, color, color)
   }
 
   getPlayerColors() {
