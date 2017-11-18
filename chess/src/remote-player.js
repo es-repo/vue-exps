@@ -41,8 +41,8 @@ export default class extends Player {
   restoreMove(str){
     const remoteMove = JSON.parse(str)
     const move = {
-      from: {x: remoteMove.from.x, y: 7 - remoteMove.from.y},
-      to: {x: remoteMove.to.x, y: 7 - remoteMove.to.y}
+      from: {x: 7 - remoteMove.from.x, y: 7 - remoteMove.from.y},
+      to: {x: 7 - remoteMove.to.x, y: 7 - remoteMove.to.y}
     }
     const cell = this.board.cell(move.from.x,  move.from.y)
     move.piece = cell.pieces.length > 0 ? cell.pieces[0] : null

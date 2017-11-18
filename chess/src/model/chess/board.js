@@ -3,8 +3,8 @@ import Board from '../board'
 export default class extends Board {
   constructor(reverse = false) {
     super(8)
-    const color1 = reverse ? 'black' : 'white'
-    const color2 = reverse ? 'white' : 'black'
+    const color1 = 'white'
+    const color2 = 'black'
 
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
