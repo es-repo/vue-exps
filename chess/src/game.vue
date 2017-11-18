@@ -49,8 +49,8 @@ const pieceCapturedSound = new Audio(pieceCapturedSoundFile)
 import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
-import checkSoundFile from './pieces/sounds/check.mp3'
-const checkSound = new Audio(checkSoundFile)
+import kingInCheckSoundFile from './pieces/sounds/check.mp3'
+const kingInCheckSound = new Audio(kingInCheckSoundFile)
 
 const waitMessage = 'Waiting for opponent ...'
 const errorMessage = { message: 'Something gone wrong.', severity: 'error' }
@@ -130,7 +130,10 @@ export default {
     attachGameEventHandlers(game) {
       game.moveAcceptedEvent.on((plr, move) => {
         this.selectedPiece = null
-        pieceMoveSound.play()
+        const oppPlr = this.game.opponentPlayer(plr)
+        const isOppKingInCheck = this.game.isKingInCheck(oppPlr)
+        const sound = isOppKingInCheck ? kingInCheckSound : pieceMoveSound
+        sound.play()
         if (move.capture != null && move.capture.pieces.length > 0) {
           pieceCapturedSound.play()
         }
@@ -203,9 +206,6 @@ export default {
           for (const p of this.game.board.findPiecesOfColor(plr.color)) {
             const pieceVm = this.$refs.board.pieceVm(p.piece, p.x, p.y)
             pieceVm.stickToFearExpresion = inCheck
-          }
-          if (inCheck){
-            checkSound.play()
           }
         }
       })
