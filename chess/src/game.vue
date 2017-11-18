@@ -49,6 +49,9 @@ const pieceCapturedSound = new Audio(pieceCapturedSoundFile)
 import pieceRejectedSoundFile from './pieces/sounds/rejected.mp3'
 const rejectedCapturedSound = new Audio(pieceRejectedSoundFile)
 
+import checkSoundFile from './pieces/sounds/check.mp3'
+const checkSound = new Audio(checkSoundFile)
+
 const waitMessage = 'Waiting for opponent ...'
 const errorMessage = { message: 'Something gone wrong.', severity: 'error' }
 
@@ -200,6 +203,9 @@ export default {
           for (const p of this.game.board.findPiecesOfColor(plr.color)) {
             const pieceVm = this.$refs.board.pieceVm(p.piece, p.x, p.y)
             pieceVm.stickToFearExpresion = inCheck
+          }
+          if (inCheck){
+            checkSound.play()
           }
         }
       })

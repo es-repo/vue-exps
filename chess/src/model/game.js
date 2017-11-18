@@ -1,8 +1,9 @@
 import Event from '../utils/event'
 
 export default class {
-  constructor(plrs) {
+  constructor(plrs, options = null) {
     this.plrs = plrs
+    this.options = options || {}
     this.plrsQueue = [...plrs]
     this.stopPending = false
     this.log = []
