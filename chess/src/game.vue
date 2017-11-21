@@ -127,6 +127,7 @@ export default {
       Vue.nextTick(() => {
         this.game.run()
         pieceMoveSound.play()
+        this.setPiecesToJoyExpression()
       })
     },
 
@@ -226,6 +227,16 @@ export default {
           }
         }
       })
+    },
+
+    setPiecesToJoyExpression() {
+      for (const plr of this.game.plrs) {
+        for (const p of this.game.board.findPiecesOfColor(plr.color)) {
+          const pieceVm = this.$refs.board.pieceVm(p.piece, p.x, p.y)
+          pieceVm.faceExpr = 'joy'
+          pieceVm.stickToFearExpresion = false
+        }
+      }
     }
   }
 }
@@ -282,7 +293,7 @@ export default {
   z-index: 1;
   color: white;
   margin-top: 0.5em;
-  margin-left:0.2em;
+  margin-left: 0.2em;
 }
 
 @media all and (pointer: coarse) {
