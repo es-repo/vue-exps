@@ -3,12 +3,13 @@ import Board from './board'
 import * as Pieces from './pieces'
 import PieceMovementRules from './piece-move-rules'
 import deepEqual from 'deep-equal'
+import compact from 'lodash/compact'
 
 export default class extends Game {
   constructor(plr1, plr2) {
-    super([plr1, plr2])
+    super(compact([plr1, plr2]))
     // Put white player at first position in player queue.
-    if (plr2 != null && plr2.color === 'white'){
+    if (plr2 != null && plr2.color === 'white') {
       this.plrsQueue = [plr2, plr1]
     }
 
@@ -42,6 +43,16 @@ export default class extends Game {
       }
     }
     return id
+  }
+
+  handleInterruption(plr, interruption) {
+    switch (interruption.type) {
+    case 'resignation': {
+      const oppPlr = this.opponentPlayer(plr)
+      this.endGame({ winPlr: oppPlr, reason: 'resignation' })
+      break
+    }
+    }
   }
 
   validateMove(plr, move) {
@@ -178,7 +189,7 @@ export default class extends Game {
   getGameResult(plr) {
     const oppPlr = this.opponentPlayer(plr)
     if (this.isKingCheckmated(oppPlr)) {
-      return { winPlr: plr, reason: 'checkmate' }
+      return { winPlr: plr }
     }
     if (this.isStalemate(oppPlr)) {
       return { draw: true, reason: 'stalemate' }

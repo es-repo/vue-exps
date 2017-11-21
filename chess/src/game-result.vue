@@ -19,10 +19,12 @@ export default {
 
   computed: {
     message() {
-      return this.result == null ? '' : this.result.draw
-        ? this.result.reason === 'stalemate'
-          ? 'draw by stalemate!' : 'draw!'
-        : this.result.winPlr.color + ' won!'
+      if (this.result == null)
+        return ''
+
+      const byreason = this.result.reason != null ? ' by ' + this.result.reason : ''
+      const what = this.result.draw ? 'draw' : `${this.result.winPlr.color} won`
+      return `${what}${byreason}!`
     }
   }
 }

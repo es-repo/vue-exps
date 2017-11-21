@@ -6,4 +6,8 @@ export default class {
 
   async move() {
   }
+
+  async interrupt(){
+
+  }
 }

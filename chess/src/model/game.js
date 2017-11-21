@@ -17,7 +17,23 @@ export default class {
     this.gameEndedEvent = new Event()
   }
 
+  async listenForInterruption(){
+    // A player can interrupt the game for example by resigning of offering a draw.
+    // Listen for the interruption and react.
+    while(!this.isEnded){
+      const interruptions = this.plrsQueue.map(plr =>
+        plr.interrupt().then(interruption => {return {plr, interruption}}))
+      const {plr, interruption} = await Promise.race(interruptions)
+      this.handleInterruption(plr, interruption)
+    }
+  }
+
+  handleInterruption(){
+  }
+
   async run() {
+    this.listenForInterruption()
+
     while (this.plrsQueue.length > 0) {
       const plr = this.plrsQueue.shift()
       this.playerOnTurnEvent.emit(plr)
@@ -56,10 +72,9 @@ export default class {
         this.moveRejectedEvent.emit(plr, move)
       }
 
-      this.gameResult = this.getGameResult(plr, move)
-      if (this.gameResult != null) {
-        this.plrsQueue = []
-        this.gameEndedEvent.emit(this.gameResult)
+      const gameResult = this.getGameResult(plr, move)
+      if (gameResult != null) {
+        this.endGame(gameResult)
       }
     }
   }
@@ -86,5 +101,15 @@ export default class {
 
   get isEnded(){
     return this.gameResult != null
+  }
+
+  endGame(gameResult){
+    // Check if game was not ended before.
+    if (this.gameResult != null)
+      return
+
+    this.gameResult = gameResult
+    this.plrsQueue = []
+    this.gameEndedEvent.emit(this.gameResult)
   }
 }

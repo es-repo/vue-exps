@@ -19,9 +19,14 @@
     </div>
     <div :class="$style.gameControls">
       <player-panel :player="bottomPlayer" />
-      <button @click="onUndoClick"
-              :style="{visibility: isUndoAvailable ? '':'hidden'}"
-              :class="$style.controlButton">Undo</button>
+      <div class="button-panel">
+        <button @click="onUndoClick"
+                :style="{visibility: isUndoAvailable ? '':'hidden'}"
+                :class="$style.controlButton">Undo</button>
+        <button @click="onResignClick"
+                :style="{visibility: isResignAvailable ? '':'hidden'}"
+                :class="$style.controlButton">Resign</button>
+      </div>
     </div>
 
   </section>
@@ -104,8 +109,12 @@ export default {
         : null
     },
 
-    isUndoAvailable(){
+    isUndoAvailable() {
       return !this.isOnlineGame && this.game.log.length > 0 && !this.game.isEnded
+    },
+
+    isResignAvailable() {
+      return !this.game.isEnded && this.game.plrs.length > 1 && this.isOnlineGame
     }
   },
 
@@ -163,6 +172,10 @@ export default {
 
     onUndoClick() {
       this.$emit('undo-click')
+    },
+
+    onResignClick() {
+      this.$emit('resign-click')
     },
 
     async onMenuItemClick(i) {
@@ -269,6 +282,7 @@ export default {
   z-index: 1;
   color: white;
   margin-top: 0.5em;
+  margin-left:0.2em;
 }
 
 @media all and (pointer: coarse) {

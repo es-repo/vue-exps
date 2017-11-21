@@ -8,6 +8,7 @@ export default class extends Player {
     this.pieceSelectedEvent = new Event()
     this.selectedPiece = null
     this.resolveMove = null
+    this.resolveInterrupt = null
     this.moving = false
     this.uiVm - uiVm
 
@@ -17,8 +18,11 @@ export default class extends Player {
     this.onCellClickedHandler = this.onCellClicked.bind(this)
     uiVm.$refs.board.$on('cell-clicked', this.onCellClickedHandler)
 
-    this.undoCliclHandler = this.finishWithUndoLastMove.bind(this)
-    uiVm.$on('undo-click', this.undoCliclHandler)
+    this.onUndoClicklHandler = this.finishWithUndoLastMove.bind(this)
+    uiVm.$on('undo-click', this.onUndoClicklHandler)
+
+    this.onResignClickHandler = this.onResignClicked.bind(this)
+    uiVm.$on('resign-click', this.onResignClickHandler)
   }
 
   async move() {
@@ -77,6 +81,20 @@ export default class extends Player {
   detach() {
     this.uiVm.$refs.board.$off('piece-clicked', this.onPieceClickedHandler)
     this.uiVm.$refs.board.$off('cell-clicked', this.onCellClickedHandler)
-    this.uiVm.$off('undo-click', this.undoCliclHandler)
+    this.uiVm.$refs.board.$off('resign-clicked', this.onResignClickHandler)
+    this.uiVm.$off('undo-click', this.onUndoClicklHandler)
+  }
+
+  async interrupt(){
+    return new Promise(resolve => {
+      this.resolveInterrupt = resolve
+    })
+  }
+
+  onResignClicked(){
+    if (this.resolveInterrupt != null){
+      this.resolveInterrupt({type: 'resignation'})
+      this.resolveInterrupt = null
+    }
   }
 }
