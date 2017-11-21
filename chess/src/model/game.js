@@ -7,6 +7,7 @@ export default class {
     this.plrsQueue = [...plrs]
     this.stopPending = false
     this.log = []
+    this.gameResult = null
 
     this.playerOnTurnEvent = new Event()
     this.lastMoveUndoneEvent = new Event()
@@ -55,10 +56,10 @@ export default class {
         this.moveRejectedEvent.emit(plr, move)
       }
 
-      const gameResult = this.getGameResult(plr, move)
-      if (gameResult != null && gameResult.isGameEnd) {
+      this.gameResult = this.getGameResult(plr, move)
+      if (this.gameResult != null) {
         this.plrsQueue = []
-        this.gameEndedEvent.emit(gameResult)
+        this.gameEndedEvent.emit(this.gameResult)
       }
     }
   }
@@ -81,5 +82,9 @@ export default class {
 
   stop() {
     this.stopPending = true
+  }
+
+  get isEnded(){
+    return this.gameResult != null
   }
 }

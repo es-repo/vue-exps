@@ -20,7 +20,7 @@
     <div :class="$style.gameControls">
       <player-panel :player="bottomPlayer" />
       <button @click="onUndoClick"
-              :style="{visibility: !isOnlineGame && game.log.length>0?'':'hidden'}"
+              :style="{visibility: isUndoAvailable ? '':'hidden'}"
               :class="$style.controlButton">Undo</button>
     </div>
 
@@ -102,6 +102,10 @@ export default {
       return this.game != null && this.game.plrs.length > 0
         ? this.game.plrs[0]
         : null
+    },
+
+    isUndoAvailable(){
+      return !this.isOnlineGame && this.game.log.length > 0 && !this.game.isEnded
     }
   },
 

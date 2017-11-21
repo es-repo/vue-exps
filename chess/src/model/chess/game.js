@@ -178,13 +178,13 @@ export default class extends Game {
   getGameResult(plr) {
     const oppPlr = this.opponentPlayer(plr)
     if (this.isKingCheckmated(oppPlr)) {
-      return { isGameEnd: true, winPlr: plr, reason: 'checkmate' }
+      return { winPlr: plr, reason: 'checkmate' }
     }
     if (this.isStalemate(oppPlr)) {
-      return { isGameEnd: true, draw: true, reason: 'stalemate' }
+      return { draw: true, reason: 'stalemate' }
     }
     if (this.isInsufficientMaterial()) {
-      return { isGameEnd: true, draw: true }
+      return { draw: true }
     }
     return null
   }
