@@ -8,6 +8,5 @@ export default class {
   }
 
   async interrupt(){
-
   }
 }

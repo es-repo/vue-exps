@@ -56,6 +56,10 @@ export default class extends Game {
   }
 
   validateMove(plr, move) {
+    const baseVaildRes = super.validateMove(plr, move)
+    if (!baseVaildRes)
+      return baseVaildRes
+
     const fromCell = this.board.cell(move.from.x, move.from.y)
     const toCell = this.board.cell(move.to.x, move.to.y)
 

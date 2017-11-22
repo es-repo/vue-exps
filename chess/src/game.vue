@@ -21,10 +21,10 @@
       <player-panel :player="bottomPlayer" />
       <div class="button-panel">
         <button @click="onUndoClick"
-                :style="{visibility: isUndoAvailable ? '':'hidden'}"
+                :style="{display: isUndoAvailable ? '':'none'}"
                 :class="$style.controlButton">Undo</button>
         <button @click="onResignClick"
-                :style="{visibility: isResignAvailable ? '':'hidden'}"
+                :style="{display: isResignAvailable ? '':'none'}"
                 :class="$style.controlButton">Resign</button>
       </div>
     </div>

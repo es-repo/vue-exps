@@ -15,6 +15,7 @@ export default class {
     this.moveAcceptedEvent = new Event()
     this.moveRejectedEvent = new Event()
     this.gameEndedEvent = new Event()
+    this.interruptedEvent = new Event()
   }
 
   async listenForInterruption(){
@@ -25,6 +26,7 @@ export default class {
         plr.interrupt().then(interruption => {return {plr, interruption}}))
       const {plr, interruption} = await Promise.race(interruptions)
       this.handleInterruption(plr, interruption)
+      this.interruptedEvent.emit(plr, interruption)
     }
   }
 
@@ -80,7 +82,8 @@ export default class {
   }
 
   validateMove() {
-    return true
+    // If game is ended then no valid moves
+    return !this.isEnded
   }
 
   commitMove(plr, move) {

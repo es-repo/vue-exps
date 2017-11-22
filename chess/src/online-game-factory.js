@@ -98,13 +98,20 @@ export default class {
 
   createGame(gameDocRef, thisPlr, oppPlr) {
     const game = new Chess(thisPlr, oppPlr)
-    // Listen for this player move and save it to db
+
+    // Listen for this player moves and interruptions and save then to db
     // so remote part will able to read these moves.
     game.moveAcceptedEvent.on((plr, move) => {
       if (plr === thisPlr) {
         this.addMoveToDb(gameDocRef, plr, move)
       }
     })
+    game.interruptedEvent.on((plr, inter) => {
+      if (plr === thisPlr) {
+        this.addInterruptionToDb(gameDocRef, plr, inter)
+      }
+    })
+
     return game
   }
 
@@ -126,6 +133,15 @@ export default class {
       timestamp: Firebase.firestore.FieldValue.serverTimestamp()
     }
     return gameDocRef.collection('moves').add(moveDocData)
+  }
+
+  async addInterruptionToDb(gameDocRef, plr, inter){
+    const interDocData = {
+      plrId: plr.id,
+      interruption: JSON.stringify(inter),
+      timestamp: Firebase.firestore.FieldValue.serverTimestamp()
+    }
+    return gameDocRef.collection('interruptions').add(interDocData)
   }
 
   createUiPlayer(usr) {

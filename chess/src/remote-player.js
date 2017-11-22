@@ -6,7 +6,9 @@ export default class extends Player {
     // Should be set from outside after game instanse will be created
     this.board = null
     this.resolveMove = null
+    this.resolveInterruption = null
     this.listenRemotePlayerMove(gameDocRef)
+    this.listenRemotePlayerInterruption(gameDocRef)
   }
 
   async move() {
@@ -18,7 +20,7 @@ export default class extends Player {
   listenRemotePlayerMove(gameDocRef) {
     // Listen for 'moves' collection changes in game document.
     // When new move is appeared then check if it's correspond
-    // to the remove player. And if yes then reflect this move.
+    // to the remote player. And if yes then reflect this move.
     gameDocRef.collection('moves')
       .orderBy('timestamp')
       .onSnapshot(movesSnapshot => {
@@ -47,5 +49,32 @@ export default class extends Player {
     const cell = this.board.cell(move.from.x,  move.from.y)
     move.piece = cell.pieces.length > 0 ? cell.pieces[0] : null
     return move
+  }
+
+  async interrupt(){
+    return new Promise(resolve => {
+      this.resolveInterruption = resolve
+    })
+  }
+
+  listenRemotePlayerInterruption(gameDocRef) {
+    // Listen for 'interruptions' collection changes in game document.
+    gameDocRef.collection('interruptions')
+      .orderBy('timestamp')
+      .onSnapshot(snapshot => {
+
+        // Take last interruption which correspond to remote player.
+        for(let i = snapshot.docs.length - 1; i >= 0; i--){
+          const docData = snapshot.docs[i].data()
+          if (docData.plrId === this.id){
+            const inter = JSON.parse(docData.interruption)
+            if (this.resolveInterruption != null){
+              this.resolveInterruption(inter)
+              this.resolveInterruption = null
+            }
+            break
+          }
+        }
+      })
   }
 }
