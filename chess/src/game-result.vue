@@ -23,7 +23,7 @@ export default {
         return ''
 
       const byreason = this.result.reason != null ? ' by ' + this.result.reason : ''
-      const what = this.result.draw ? 'draw' : `${this.result.winPlr.color} won`
+      const what = this.result.draw ? 'draw' : `${this.result.winPlr.name} won`
       return `${what}${byreason}!`
     }
   }
