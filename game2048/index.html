@@ -346,6 +346,21 @@
       -webkit-transform: translateZ(0);
     }
 
+    .donate {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .donate ul {
+      font-weight: normal;
+      list-style-type: none;
+      padding: 0;
+    }
+
     @keyframes chip-value-changed {
       0% {
         transform: scale(1);
@@ -640,6 +655,16 @@
       <div style="display:none" ref="collectAllAwards" class="collect-all-awards" v-if="!allAwardsObtained">
         <span>Collect all awards!</span>
       </div>
+      <div class="donate">
+        If you like this game you can support me:
+        <div>
+          <ul>
+            <li>BTC: <a href="bitcoin:bc1qrv8a2ete49wwm0h20eu52wkgftelfarzfflxfl">bc1qrv8a2ete49wwm0h20eu52wkgftelfarzfflxfl</a></li>
+            <li>LTC: <a href="litecoin:ltc1qugwda6negmlexj7cmnqs4e78dtk6mx2nd25rkz">ltc1qugwda6negmlexj7cmnqs4e78dtk6mx2nd25rkz</a></li>
+            <li>ETH: <a href="ethereum:0x86C66835c463bbbf2089B7e3097C97b0c04903f9">0x86C66835c463bbbf2089B7e3097C97b0c04903f9</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -688,6 +713,13 @@
       {{award.aim}}
     </div>
   </template>
+
+  <div id="wallet-qr">
+    <transition :css="false" @enter="enter">
+      <div class="wallet-qr" :style="style">Hello wallet</div>
+    </transition>
+  </div>
+
   <script>
     (function () {
       Vue.component('game2048-award', {
